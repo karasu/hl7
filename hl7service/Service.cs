@@ -13,6 +13,9 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 
+using System.Xml;
+
+
 namespace hl7service
 {
     class TCPServer
@@ -46,8 +49,37 @@ namespace hl7service
 
     class XMLLoader
     {
+        
         public XMLLoader()
         { 
+
+        }
+
+        public Read(string fileName)
+        {
+
+            XmlTextReader reader = new XmlTextReader(fileName);
+
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        Console.Write("<" + reader.Name);
+                        while (reader.MoveToNextAttribute())
+                            Console.Write(" " + reader.Name + "='" + reader.Value + "'");
+                            Console.WriteLine(">");
+                        break;
+
+                    case XmlNodeType.Text:
+                        Console.WriteLine (reader.Value);
+                        break;
+                    case XmlNodeType.EndElement: //Mostrar el final del elemento.
+                        Console.Write("</" + reader.Name);
+                        Console.WriteLine(">");
+                        break;
+                }
+            }
         }
     }
 
