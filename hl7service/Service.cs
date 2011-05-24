@@ -55,7 +55,7 @@ namespace hl7service
 
         }
 
-        public Read(string fileName)
+        public void Read(string fileName)
         {
 
             XmlTextReader reader = new XmlTextReader(fileName);
