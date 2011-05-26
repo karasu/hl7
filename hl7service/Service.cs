@@ -14,51 +14,117 @@ using System.Threading;
 using System.Net;
 
 using System.Xml;
+using System.IO;
+using System.Collections;
 
 
 namespace hl7service
 {
-    class TCPServer
+    class TCPHandler
     {
-        private TcpListener tcpListener;
         private Thread listenThread;
 
-        public TCPServer()
+		private TcpListener tcpListener;
+
+        public TCPHandler(int port)
         {
-            this.tcpListener = new TcpListener(IPAddress.Any, 3000);
-            this.listenThread = new Thread(new ThreadStart(ListenForClients));
+            this.tcpListener = new TcpListener(IPAddress.Any, port);
+            
+			this.listenThread = new Thread(new ThreadStart(Listener));
             this.listenThread.Start();
         }
         
-        private void ListenForClients()
+        private void Listener()
         {
             this.tcpListener.Start();
 
             while (true)
             {
-                //blocks until a client has connected to the server
+                // blocks until a client has connected to the server
                 TcpClient client = this.tcpListener.AcceptTcpClient();
 
-                //create a thread to handle communication 
-                //with connected client
+                // create a thread to handle communication 
+                // with connected client
                 Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
                 clientThread.Start(client);
             }
         }
-    }
+		
+		private void HandleClientComm(object client)
+		{
+		  TcpClient tcpClient = (TcpClient)client;
+		  NetworkStream clientStream = tcpClient.GetStream();
+		
+		  byte[] message = new byte[4096];
+		  int bytesRead;
+		
+		  while (true)
+		  {
+		    bytesRead = 0;
+		
+		    try
+		    {
+		      //blocks until a client sends a message
+		      bytesRead = clientStream.Read(message, 0, 4096);
+		    }
+		    catch
+		    {
+		      //a socket error has occured
+		      break;
+		    }
+		
+		    if (bytesRead == 0)
+		    {
+		      //the client has disconnected from the server
+		      break;
+		    }
+		
+		    //message has successfully been received
+		    ASCIIEncoding encoder = new ASCIIEncoding();
+		    System.Diagnostics.Debug.WriteLine(encoder.GetString(message, 0, bytesRead));
+		  }
+		
+		  tcpClient.Close();
+		}		
+	    }
 
-    class XMLLoader
+    class XMLHandler
     {
-        
-        public XMLLoader()
-        { 
+        private Thread listenThread;
+		
+		private string xmlFolder;
 
-        }
-
-        public void Read(string fileName)
+        public XMLHandler(String xmlFolder)
         {
+			this.xmlFolder = xmlFolder;
 
-            XmlTextReader reader = new XmlTextReader(fileName);
+			this.listenThread = new Thread(new ThreadStart(Listener));
+			this.listenThread.Start();
+        }
+		
+		private void Listener()
+		{
+			// Process the list of files found in the directory.
+        	string [] fileEntries = Directory.GetFiles(xmlFolder);
+			
+			foreach(string fileName in fileEntries)
+			{
+				if (fileName.EndsWith("xml"))
+				{
+            		if (ProcessFile(fileName))
+					{
+						File.Delete(fileName);
+					}
+				}
+			}
+		}
+
+        public bool ProcessFile(string fileName)
+        {
+			
+ 			Console.WriteLine("Reading '{0}'.", fileName);
+			
+			XmlTextReader reader = new XmlTextReader(fileName);
 
             while (reader.Read())
             {
@@ -80,13 +146,15 @@ namespace hl7service
                         break;
                 }
             }
+			
+			return true;
         }
     }
 
     class HL7Service:ServiceBase
     {
-        public TCPServer tcpServer = null;
-        public XMLLoader xmlLoader = null;
+        public TCPHandler myTCP = null;
+        public XMLHandler myXML = null;
 
         public HL7Service()
         {
@@ -100,6 +168,8 @@ namespace hl7service
 
         protected override void OnStart(string[] args)
         {
+			myTCP = new TCPHandler(5757);
+			myXML = new XMLHandler("xml");
         }
     }
 }
