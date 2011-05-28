@@ -16,6 +16,8 @@ namespace hl7service
         {
 			this.xmlFolder = xmlFolder;
 
+			Console.WriteLine("XMLHandler: new thread started");
+
 			this.listenThread = new Thread(new ThreadStart(Listener));
 			this.listenThread.Start();
         }
@@ -40,7 +42,7 @@ namespace hl7service
         public bool ProcessFile(string fileName)
         {
 			
- 			Console.WriteLine("Reading '{0}'.", fileName);
+ 			Console.WriteLine("XMLHandler: Reading '{0}'.", fileName);
 			
 			XmlTextReader reader = new XmlTextReader(fileName);
 
