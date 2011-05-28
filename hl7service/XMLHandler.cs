@@ -11,6 +11,8 @@ namespace hl7service
         private Thread listenThread;
 		
 		private string xmlFolder;
+		
+		private FileSystemWatcher watcher = null;
 
         public XMLHandler(String xmlFolder)
         {
@@ -43,13 +45,15 @@ namespace hl7service
                 Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
                 clientThread.Start(client);
                 */
+				
+				System.Threading.Thread.Sleep(1000);
             }
         }
 		
 		public void CreateWatcher()
 		{
-			//Create a new FileSystemWatcher.
-			FileSystemWatcher watcher = new FileSystemWatcher();
+			// Create a new FileSystemWatcher.
+			watcher = new FileSystemWatcher();
 	
 			// Set the filter to only catch XML files.
 			watcher.Filter = "*.xml";
@@ -70,7 +74,7 @@ namespace hl7service
             // Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
             // clientThread.Start(client);
 			
-			Console.WriteLine("{0} file has been created!", e.FullPath);
+			ProcessFile(e.FullPath);
 		}
 		
 		void ProcessPreviousExistingFiles()
@@ -92,9 +96,9 @@ namespace hl7service
 		
         public bool ProcessFile(string fileName)
         {
-			
  			Console.WriteLine("XMLHandler: Reading '{0}'.", fileName);
 			
+			/*
 			XmlTextReader reader = new XmlTextReader(fileName);
 
             while (reader.Read())
@@ -117,6 +121,7 @@ namespace hl7service
                         break;
                 }
             }
+            */
 			
 			return true;
         }
