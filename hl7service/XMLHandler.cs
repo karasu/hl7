@@ -18,11 +18,62 @@ namespace hl7service
 
 			Console.WriteLine("XMLHandler: new thread started");
 
-			this.listenThread = new Thread(new ThreadStart(Listener));
+			this.listenThread = new Thread(new ThreadStart(WatchForFiles));
 			this.listenThread.Start();
         }
 		
-		private void Listener()
+		public void WatchForFiles()
+		{
+			// First process all existing xml files
+			
+			ProcessPreviousExistingFiles();
+			
+			// Now watch directory for changes
+			
+			CreateWatcher();
+			
+            while (true)
+            {
+				/*
+                // blocks until a client has connected to the server
+                TcpClient client = this.tcpListener.AcceptTcpClient();
+
+                // create a thread to handle communication 
+                // with connected client
+                Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+                clientThread.Start(client);
+                */
+            }
+        }
+		
+		public void CreateWatcher()
+		{
+			//Create a new FileSystemWatcher.
+			FileSystemWatcher watcher = new FileSystemWatcher();
+	
+			// Set the filter to only catch XML files.
+			watcher.Filter = "*.xml";
+
+			// Subscribe to the Created event.
+			watcher.Created += new FileSystemEventHandler(watcher_FileCreated);
+
+			// Set the path
+			watcher.Path = this.xmlFolder;
+
+			// Enable the FileSystemWatcher events.
+			watcher.EnableRaisingEvents = true;
+		}
+		
+		void watcher_FileCreated(object sender, FileSystemEventArgs e)
+		{
+			// A new .xml file has been created
+            // Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+            // clientThread.Start(client);
+			
+			Console.WriteLine("{0} file has been created!", e.FullPath);
+		}
+		
+		void ProcessPreviousExistingFiles()
 		{
 			// Process the list of files found in the directory.
         	string [] fileEntries = Directory.GetFiles(xmlFolder);
@@ -33,12 +84,12 @@ namespace hl7service
 				{
             		if (ProcessFile(fileName))
 					{
-						File.Delete(fileName);
+						// File.Delete(fileName);
 					}
 				}
 			}
 		}
-
+		
         public bool ProcessFile(string fileName)
         {
 			

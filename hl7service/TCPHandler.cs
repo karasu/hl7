@@ -16,11 +16,11 @@ namespace hl7service
         {
             this.tcpListener = new TcpListener(IPAddress.Any, port);
             
-			this.listenThread = new Thread(new ThreadStart(Listener));
+			this.listenThread = new Thread(new ThreadStart(ListenForClients));
             this.listenThread.Start();
         }
         
-        private void Listener()
+        private void ListenForClients()
         {
             this.tcpListener.Start();
 
