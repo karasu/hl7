@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Message xmlns="urn:hl7-org:v3" xmlns:dt="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <id root="2.24.750.2.937172.4433" extension="CTRL-9876"/>
+    <creation_time value="2005-02-15T09:30:00-05:00"/>
+    <version_id>3.0</version_id>
+    <interaction_id root="2.24.750.2.937172" extension="POLB_IN004410"/>
+    <processing_cd code="P"/>
+    <accept_ack_cd code="ER"/>
+    <executedByRespondToOrg>
+        <type_cd code="RSP"/>
+        <telecom use="WP" url="555-555-5555"/>
+        <servedBy>
+            <nm xsi:type="dt:PN">
+                <family>Honeywell</family>
+                <given>Carson</given>
+                <suffix qualifier="AC">MD</suffix>
+            </nm>
+            <telecom use="WP" url="555-555-5555"/>
+        </servedBy>
+    </executedByRespondToOrg>
+    <executedBySendApp>
+        <type_cd code="SND"/>
+        <telecom value="127.127.127.255"/>
+        <servedBy>
+            <nm use="L"/>
+            <telecom value="555-555-2005" use="H"/>
+            <id root="2.24.750.2.937172.4433" extension="DDTEK LAB"/>
+            <agencyFor>
+                <representedOrganization>
+                    <id nullFlavor="OTH"/>
+                    <nm xsi:type="dt:TN">DDTEK LAB</nm>
+                </representedOrganization>
+            </agencyFor>
+            <presence>
+                <location>
+                    <id root="2.24.750.2.937172.4433" extension="ELAB-1"/>
+                </location>
+            </presence>
+        </servedBy>
+    </executedBySendApp>
+    <executedByRcvApp>
+        <type_cd code="RCV"/>
+        <telecom value="127.127.127.0"/>
+        <servedBy>
+            <nm use="L"/>
+            <telecom use="H" value="555-555-2005"/>
+            <id root="2.24.750.2.937172.4433" extension="DDTEK OE"/>
+            <agencyFor>
+                <representedOrganization>
+                    <id root="2.24.750.2.937172.19.3.1001"/>
+                    <nm xsi:type="TN">DDTEK Outpatient Clinic</nm>
+                </representedOrganization>
+            </agencyFor>
+            <presence>
+                <location>
+                    <id root="2.24.750.2.937172.4433" extension="BLDG14"/>
+                    <nm xsi:type="TN">DDTEK Outpatient Clinic</nm>
+                </location>
+            </presence>
+        </servedBy>
+    </executedByRcvApp>
+    <has_payload_ControlActEvent xsi:type="MCAI_HD700200">
+        <response_cd code="N"/>
+        <verifier>
+            <participant_COCT_MT090100>
+                <id root="2.24.750.2.937172.4433" extension="030-33-3333"/>
+            </participant_COCT_MT090100>
+        </verifier>
+        <interactionTarget xsi:type="POLB_MT004101">
+            <ObservationEvent>
+                <id root="2.24.750.2.937172.4433" extension="917363" assigningAuthorityName="DDTEK LAB"/>
+                <cd code="1554-5" codeSystemName="LN" displayName="GLUCOSE POST 12H CFST:MCNC:PT:SER/PLAS:QN"/>
+                <status_cd code="completed"/>
+                <effective_time>
+                    <center value="2005-02-15T07:30:00-05:00"/>
+                </effective_time>
+                <activity_time>
+                    <center value=""/>
+                </activity_time>
+                <priority_cd code="R"/>
+                <value xsi:type="dt:PQ" value="175" unit="mg/dl"/>
+                <interpretation_cd code="H"/>
+                <participant>
+                    <type_cd code="AUT"/>
+                    <mode_cd code="WRITTEN"/>
+                    <signature_cd code="S"/>
+                    <assignedEntity>
+                        <id root="2.24.750.2.937172.4433" extension="030-33-3333"/>
+                        <assignee_Person>
+                            <nm xsi:type="dt:PN" use="L">
+                                <family>Honeywell</family>
+                                <given>Carson</given>
+                                <suffix qualifier="AC">MD</suffix>
+                            </nm>
+                        </assignee_Person>
+                    </assignedEntity>
+                </participant>
+                <patient>
+                    <patient>
+                        <id root="2.24.750.2.937172.4433" extension="375913"/>
+                        <patient_Person>
+                            <id root="2.24.750.2.937172.4433" extension="010-11-1111" assigningAuthorityName="LA" validTime="2007-05-20"/>
+                            <nm xsi:type="dt:PN" use="L">
+                                <family/>
+                                <given>Eva</given>
+                                <given>E</given>
+                            </nm>
+                        </patient_Person>
+                    </patient>
+                </patient>
+                <inFulfillmentOf>
+                    <priorObservationOrder>
+                        <id root="2.24.750.2.937172.4433" extension="948642" assigningAuthorityName="DDTEK OE"/>
+                        <cd code="1554-5" codeSystemName="LN" displayName="Serum Glucose"/>
+                        <participant>
+                            <assignedEntity>
+                                <id root="2.24.750.2.937172.4433" extension="020-22-2222"/>
+                                <assignee_Person>
+                                    <nm xsi:type="dt:PN" use="L">
+                                        <family>Levin-Epstein</family>
+                                        <given>Anna</given>
+                                        <suffix qualifier="AC">MD</suffix>
+                                    </nm>
+                                </assignee_Person>
+                            </assignedEntity>
+                        </participant>
+                    </priorObservationOrder>
+                </inFulfillmentOf>
+                <referenceRange>
+                    <referenceObservationEventCriterion>
+                        <value xsi:type="dt:IVL_PQ">
+                            <low value="70" unit="mg/dl"/>
+                            <high value="105" unit="mg/dl"/>
+                        </value>
+                    </referenceObservationEventCriterion>
+                </referenceRange>
+            </ObservationEvent>
+        </interactionTarget>
+    </has_payload_ControlActEvent>
+</Message>
+
