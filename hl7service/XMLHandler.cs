@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace hl7service
 {
+
 	public class XMLHandler
 	{
         private Thread listenThread;
