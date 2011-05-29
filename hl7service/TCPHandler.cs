@@ -31,6 +31,9 @@ namespace hl7service
 
                 // create a thread to handle communication 
                 // with connected client
+				
+				Console.WriteLine("TCPHandler: Create a thread to handle communication with connected client");
+				
                 Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
                 clientThread.Start(client);
             }
@@ -50,24 +53,25 @@ namespace hl7service
 		
 		    try
 		    {
-		      //blocks until a client sends a message
+		      Console.WriteLine("TCPHandler: block until a client sends a message");
+					
 		      bytesRead = clientStream.Read(message, 0, 4096);
 		    }
 		    catch
 		    {
-		      //a socket error has occured
+		      Console.WriteLine("TCPHandler: a socket error has occured");
 		      break;
 		    }
 		
 		    if (bytesRead == 0)
 		    {
-		      //the client has disconnected from the server
+		      Console.WriteLine("TCPHandler: the client has disconnected from the server");
 		      break;
 		    }
 		
 		    //message has successfully been received
 		    ASCIIEncoding encoder = new ASCIIEncoding();
-		    System.Diagnostics.Debug.WriteLine(encoder.GetString(message, 0, bytesRead));
+		    Console.WriteLine(encoder.GetString(message, 0, bytesRead));
 		  }
 		
 		  tcpClient.Close();

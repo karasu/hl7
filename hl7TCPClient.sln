@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hl7TCPClient", "hl7TCPClient\hl7TCPClient.csproj", "{C786E9CD-3B93-4F92-8CCF-663431B7F248}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C786E9CD-3B93-4F92-8CCF-663431B7F248}.Debug|x86.ActiveCfg = Debug|x86
+		{C786E9CD-3B93-4F92-8CCF-663431B7F248}.Debug|x86.Build.0 = Debug|x86
+		{C786E9CD-3B93-4F92-8CCF-663431B7F248}.Release|x86.ActiveCfg = Release|x86
+		{C786E9CD-3B93-4F92-8CCF-663431B7F248}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = hl7TCPClient\hl7TCPClient.csproj
+	EndGlobalSection
+EndGlobal

@@ -61,7 +61,7 @@ namespace hl7service
         {
             HL7Service hl7 = new HL7Service();
 			
-			// hl7.myTCP = new TCPHandler(8080);
+			hl7.myTCP = new TCPHandler(8901);
 			hl7.myXML = new XMLHandler("/home/karasu/hl7/sample");
         }
 
