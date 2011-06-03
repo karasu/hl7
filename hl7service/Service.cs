@@ -36,16 +36,7 @@ namespace hl7service
         }
     }
 */
-	public class HL7Info
-	{
-		public HL7Info()
-		{
-			
-		}
-		
-		public string patientId;
-		
-	}
+	
 	
     class HL7Service
     {
