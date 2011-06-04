@@ -37,8 +37,8 @@ namespace hl7service
 		
 		public SQLServerInfo()
 		{
-			// TODO: Set defaults
-			this.user = "karasu";
+			// Set defaults
+			this.user = "sa";
 			this.password = "123456";
 			this.server_url = "localhost";
 			this.trusted_connection = true;
