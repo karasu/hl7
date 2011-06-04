@@ -54,7 +54,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XMLHandler.cs" />
+    <Compile Include="FileHandler.cs" />
     <Compile Include="TCPHandler.cs" />
     <Compile Include="PatientInfo.cs" />
     <Compile Include="SQLInfo.cs" />

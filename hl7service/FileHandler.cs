@@ -11,15 +11,15 @@ namespace hl7service
 	{
         private Thread listenThread;
 		
-		private string xmlFolder;
+		private string folder;
 		
 		private FileSystemWatcher watcher = null;
 
-        public XMLHandler(String xmlFolder)
+        public XMLHandler(String folder)
         {
-			this.xmlFolder = xmlFolder;
+			this.folder = folder;
 
-			Console.WriteLine("XMLHandler: new thread started");
+			Console.WriteLine("FileHandler: new thread started");
 
 			this.listenThread = new Thread(new ThreadStart(WatchForFiles));
 			this.listenThread.Start();
@@ -63,7 +63,7 @@ namespace hl7service
 			watcher.Created += new FileSystemEventHandler(watcher_FileCreated);
 
 			// Set the path
-			watcher.Path = this.xmlFolder;
+			watcher.Path = this.folder;
 
 			// Enable the FileSystemWatcher events.
 			watcher.EnableRaisingEvents = true;
@@ -71,7 +71,7 @@ namespace hl7service
 		
 		void watcher_FileCreated(object sender, FileSystemEventArgs e)
 		{
-			// A new .xml file has been created
+			// A new file has been created
             // Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
             // clientThread.Start(client);
 			
@@ -85,7 +85,7 @@ namespace hl7service
 			
 			foreach(string fileName in fileEntries)
 			{
-				if (fileName.EndsWith("xml"))
+				if (fileName.EndsWith("hl7"))
 				{
             		if (ProcessFile(fileName))
 					{
@@ -97,7 +97,7 @@ namespace hl7service
 		
         public bool ProcessFile(string fileName)
         {
- 			Console.WriteLine("XMLHandler: Reading '{0}'.", fileName);
+ 			Console.WriteLine("FileHandler: Reading '{0}'.", fileName);
 			
 			/*
 			XmlTextReader reader = new XmlTextReader(fileName);

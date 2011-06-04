@@ -41,7 +41,7 @@ namespace hl7service
     class HL7Service
     {
         public TCPHandler myTCP = null;
-        public XMLHandler myXML = null;
+        public FileHandler myFile = null;
 
         public HL7Service()
         {
@@ -52,8 +52,8 @@ namespace hl7service
         {
             HL7Service hl7 = new HL7Service();
 			
-			hl7.myTCP = new TCPHandler(8901);
-			hl7.myXML = new XMLHandler("/home/karasu/hl7/sample");
+			hl7.myTCP = new TCPHandler(8901, "/home/karasu/hl7/sample");
+			hl7.myFile = new FileHandler("/home/karasu/hl7/sample");
         }
 
     }
