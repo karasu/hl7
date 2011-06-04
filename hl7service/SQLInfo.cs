@@ -2,7 +2,7 @@ using System;
 
 namespace hl7service
 {
-	public class SQLInfo
+	public class SQLServerInfo
 	{
 		public string user;
 		public string password;
@@ -35,7 +35,7 @@ namespace hl7service
 			return connection;
 		}
 		
-		public SQLInfo()
+		public SQLServerInfo()
 		{
 			// TODO: Set defaults
 			this.user = "karasu";

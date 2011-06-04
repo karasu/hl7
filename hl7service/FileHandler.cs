@@ -99,7 +99,61 @@ namespace hl7service
 		
         public bool ProcessFile(string fileName)
         {
- 			Console.WriteLine("FileHandler Processfile: Reading '{0}'.", fileName);
+			bool hl7v2 = false;
+			bool hl7v3 = false;
+			
+ 			Console.WriteLine("FileHandler: Reading '{0}'.", fileName);
+			
+			string hl7message = string.Empty;
+			
+			try
+			{
+				StreamReader infile = new StreamReader(fileName);
+				
+				while (!infile.EndOfStream)
+				{
+					hl7message += infile.ReadLine();
+				}
+				
+			}	
+			catch(Exception e)
+			{
+				Console.WriteLine(e.ToString());
+			}				
+			
+			PatientInfo p = new PatientInfo();
+			
+			string searchFor = ".v2.hl7";
+			
+			int first = fileName.IndexOf(searchFor);
+			
+			if (first != -1)
+			{
+				hl7v2 = true;
+			}
+			else
+			{
+				searchFor = ".v3.hl7";
+				
+				first = fileName.IndexOf(searchFor);
+				
+				if (first != -1)
+				{
+					hl7v3 = true;
+				}
+			}
+
+			if (hl7v2)
+			{
+				p.fromHL7v2(hl7message);
+				p.store();
+			}
+			else if (hl7v3)
+			{
+				p.fromHL7v3(hl7message);
+				p.store();
+			}
+			
 			
 			/*
 			XmlTextReader reader = new XmlTextReader(fileName);

@@ -112,9 +112,16 @@ namespace hl7service
 				}
 								
 				// Write message to disk
-				StreamWriter outfile = new StreamWriter(fileName);
-				outfile.Write(encoder.GetString(message, 0, bytesRead));
-				outfile.Close();
+				try
+				{
+					StreamWriter outfile = new StreamWriter(fileName);
+					outfile.Write(encoder.GetString(message, 0, bytesRead));
+					outfile.Close();
+				}
+				catch (Exception e)
+    			{
+        			Console.WriteLine("TCPHandler: Can't save hl7 message. '{0}'", e);
+    			}
 				
 				if (hl7v3 == false)
 				{
@@ -137,7 +144,15 @@ namespace hl7service
 								
 					// Translate the passed message into ASCII and store it as a Byte array.
 					Byte[] data = System.Text.Encoding.ASCII.GetBytes(ackMsg);
-					clientStream.Write(data, 0, data.Length);
+					
+					try
+					{
+						clientStream.Write(data, 0, data.Length);
+					}
+					catch (Exception e)
+        			{
+            			Console.WriteLine("TCPHandler: Can't send ack message. '{0}'", e);
+        			}
 				}
 				
 			}
