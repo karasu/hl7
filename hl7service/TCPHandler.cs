@@ -134,8 +134,7 @@ namespace hl7service
 					ackMsg += START_OF_BLOCK;
 					ackMsg += "MSH|^~\\&|||||||ACK||P|2.2";
 					ackMsg += CARRIAGE_RETURN;
-					ackMsg += "MSA|AA|";
-					ackMsg += messageControlId;
+					ackMsg += "MSA|AA|" + messageControlId;
 					ackMsg += CARRIAGE_RETURN;
 					ackMsg += END_OF_BLOCK;
 					ackMsg += CARRIAGE_RETURN;

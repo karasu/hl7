@@ -113,6 +113,7 @@ namespace hl7service
 				while (!infile.EndOfStream)
 				{
 					hl7message += infile.ReadLine();
+					hl7message += "\n";
 				}
 				
 			}	
