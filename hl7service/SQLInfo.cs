@@ -14,23 +14,8 @@ namespace hl7service
 		public string getConnectionString()
 		{
 			string connection;
-			string trusted;
 			
-			if (trusted_connection)
-			{
-				trusted = "yes";
-			}
-			else
-			{
-				trusted = "no";
-			}
-			
-			connection = "user id=" + user + ";" + 
-                         "password=" + password + ";" +
-			             "server=" + server_url + ";" + 
-                         "Trusted_Connection=" + trusted + ";" + 
-                         "database=" + database + "; " + 
-                         "connection timeout=" + timeout.ToString();
+			connection = "Data Source=" + server_url + ";Initial Catalog=" + database + ";User Id=" + user + ";Password=" + password;
 			
 			return connection;
 		}
@@ -40,9 +25,9 @@ namespace hl7service
 			// Set defaults
 			this.user = "sa";
 			this.password = "123456";
-			this.server_url = "localhost";
+			this.server_url = "192.168.1.3\\SQLEXPRESS";
 			this.trusted_connection = true;
-			this.database = "";
+			this.database = "SCA5t";
 			this.timeout = 30;
 		}
 	}

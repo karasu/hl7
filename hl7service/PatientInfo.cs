@@ -71,6 +71,8 @@ namespace hl7service
 			
 			Console.WriteLine("PatientInfo: " + sqlString);
 			
+			Console.WriteLine("PatientInfo connection string: " + this.connectionString);
+			
 			// store
 
 			SqlConnection myConnection = new SqlConnection();		
@@ -80,6 +82,8 @@ namespace hl7service
 			{
 
 				myConnection.Open();
+				
+				Console.WriteLine("Connection opened");
 				
 				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 				
