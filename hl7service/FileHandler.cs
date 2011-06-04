@@ -15,7 +15,7 @@ namespace hl7service
 		
 		private FileSystemWatcher watcher = null;
 
-        public XMLHandler(String folder)
+        public FileHandler(String folder)
         {
 			this.folder = folder;
 
@@ -81,7 +81,7 @@ namespace hl7service
 		void ProcessPreviousExistingFiles()
 		{
 			// Process the list of files found in the directory.
-        	string [] fileEntries = Directory.GetFiles(xmlFolder);
+        	string [] fileEntries = Directory.GetFiles(this.folder);
 			
 			foreach(string fileName in fileEntries)
 			{

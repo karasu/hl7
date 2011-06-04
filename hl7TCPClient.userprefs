@@ -5,6 +5,15 @@
       <File FileName="hl7service/FileHandler.cs" Line="88" Column="28" />
       <File FileName="hl7TCPClient/Main.cs" Line="13" Column="47" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="hl7TCPClient" expanded="True">
+            <Node name="Main.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

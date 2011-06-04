@@ -43,18 +43,18 @@ namespace hl7service
 			}		
 		}
 		
-		public string toSQL()
+		public string toSQL(SQLInfo i)
 		{
 			// TODO : this is just sample code!
 			SqlConnection myConnection = new SqlConnection();
 			
 			myConnection.ConnectionString = i.getConnectionString();
 			
+			string sqlString = "INSERT INTO table (col1, col2) VALUES (val1, 'val2')";
+			
 			try 
 			{
 				myConnection.Open();
-				
-				string sqlString = "INSERT INTO table (col1, col2) VALUES (val1, 'val2')";
 				
 				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 				
@@ -65,22 +65,26 @@ namespace hl7service
 				Console.WriteLine(e.ToString());
 			}
 			
-			
+			return sqlString;
 		}
 		
 		public string toXML()
 		{
-			// TODO		
+			// TODO
+			
+			return "";
 		}
 
 		public string toHL7v2()
 		{
 			// TODO
+			return "";
 		}
 
 		public string toHL7v3()
 		{
 			// TODO
+			return "";
 		}
 		
 		public void fromHL7v2(string text)
