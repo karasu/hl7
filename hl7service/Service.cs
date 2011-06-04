@@ -52,9 +52,10 @@ namespace hl7service
         {
             HL7Service hl7 = new HL7Service();
 			
-			hl7.myTCP = new TCPHandler(8901, "/home/karasu/hl7/sample");
-			hl7.myFile = new FileHandler("/home/karasu/hl7/sample");
+			string folder = "/tmp/hl7";
+			
+			hl7.myFile = new FileHandler(folder);			
+			hl7.myTCP = new TCPHandler(8901, folder);
         }
-
     }
 }

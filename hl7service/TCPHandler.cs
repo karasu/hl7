@@ -12,6 +12,8 @@ namespace hl7service
 		private static char END_OF_BLOCK = (char)0x001c;
 		private static char START_OF_BLOCK = (char)0x000b;
 		private static char CARRIAGE_RETURN = (char)13;
+		private static char FIELD_DELIMITER = '|';
+		private static int MESSAGE_CONTROL_ID_LOCATION = 9;
 		
     	private Thread listenThread;
 
@@ -48,8 +50,20 @@ namespace hl7service
             }
         }
 		
+		private string getMessageControlId(string message)
+		{
+			// get Message Control Id from a v2 hl7 message
+			
+        	// Split string
+        	string[] fields = message.Split(FIELD_DELIMITER);
+			
+			return fields[MESSAGE_CONTROL_ID_LOCATION-1];
+		}
+		
 		private void HandleClientComm(object client)
 		{
+			bool hl7v3 = false;
+			
 			TcpClient tcpClient = (TcpClient)client;
 			NetworkStream clientStream = tcpClient.GetStream();
 			
@@ -87,19 +101,45 @@ namespace hl7service
 				if (message[0] != START_OF_BLOCK)
 				{
 					Console.WriteLine("TCPHandler: Not HL7 v2 version, assuming v3");
-					
 					fileName += ".v3.hl7";
+					hl7v3 = true;
 				}
 				else
 				{
 					Console.WriteLine("TCPHandler: HL7 v2 message received.");
 					fileName += ".v2.hl7";
+					hl7v3 = false;
 				}
 								
 				// Write message to disk
 				StreamWriter outfile = new StreamWriter(fileName);
-				outfile.Write(message);
+				outfile.Write(encoder.GetString(message, 0, bytesRead));
 				outfile.Close();
+				
+				if (hl7v3 == false)
+				{
+					// send an v2 ack
+					
+					string messageControlId = getMessageControlId(encoder.GetString(message, 0, bytesRead));
+					
+					string ackMsg = string.Empty;
+					
+					ackMsg += START_OF_BLOCK;
+					ackMsg += "MSH|^~\\&|||||||ACK||P|2.2";
+					ackMsg += CARRIAGE_RETURN;
+					ackMsg += "MSA|AA|";
+					ackMsg += messageControlId;
+					ackMsg += CARRIAGE_RETURN;
+					ackMsg += END_OF_BLOCK;
+					ackMsg += CARRIAGE_RETURN;
+					
+					Console.WriteLine("TCPHandler: Sending ack msg...");
+								
+					// Translate the passed message into ASCII and store it as a Byte array.
+					Byte[] data = System.Text.Encoding.ASCII.GetBytes(ackMsg);
+					clientStream.Write(data, 0, data.Length);
+				}
+				
 			}
 			
 			tcpClient.Close();

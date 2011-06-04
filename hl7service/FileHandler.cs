@@ -56,8 +56,8 @@ namespace hl7service
 			// Create a new FileSystemWatcher.
 			watcher = new FileSystemWatcher();
 	
-			// Set the filter to only catch XML files.
-			watcher.Filter = "*.xml";
+			// Set the filter to only catch hl7 files.
+			watcher.Filter = "*.hl7";
 
 			// Subscribe to the Created event.
 			watcher.Created += new FileSystemEventHandler(watcher_FileCreated);
@@ -67,6 +67,8 @@ namespace hl7service
 
 			// Enable the FileSystemWatcher events.
 			watcher.EnableRaisingEvents = true;
+			
+			Console.WriteLine("FileHandler: FileSystemWatcher created.");
 		}
 		
 		void watcher_FileCreated(object sender, FileSystemEventArgs e)
@@ -97,7 +99,7 @@ namespace hl7service
 		
         public bool ProcessFile(string fileName)
         {
- 			Console.WriteLine("FileHandler: Reading '{0}'.", fileName);
+ 			Console.WriteLine("FileHandler Processfile: Reading '{0}'.", fileName);
 			
 			/*
 			XmlTextReader reader = new XmlTextReader(fileName);
