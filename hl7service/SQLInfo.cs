@@ -10,10 +10,10 @@ namespace hl7service
 		public bool trusted_connection;
 		public string database;
 		public int timeout;
-		
+				
 		public string getConnectionString()
 		{
-			string connectionString;
+			string connection;
 			string trusted;
 			
 			if (trusted_connection)
@@ -25,14 +25,14 @@ namespace hl7service
 				trusted = "no";
 			}
 			
-			connectionString = "user id=" + user + ";" + 
-                               "password=" + password + ";" +
-			                   "server=" + server_url + ";" + 
-                               "Trusted_Connection=" + trusted + ";" + 
-                               "database=" + database + "; " + 
-                               "connection timeout=" + timeout.ToString();
+			connection = "user id=" + user + ";" + 
+                         "password=" + password + ";" +
+			             "server=" + server_url + ";" + 
+                         "Trusted_Connection=" + trusted + ";" + 
+                         "database=" + database + "; " + 
+                         "connection timeout=" + timeout.ToString();
 			
-			return connectionString;
+			return connection;
 		}
 		
 		public SQLInfo()
@@ -45,4 +45,5 @@ namespace hl7service
 			this.database = "";
 			this.timeout = 30;
 		}
+	}
 }

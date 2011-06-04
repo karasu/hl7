@@ -7,7 +7,7 @@ using System.Threading;
 namespace hl7service
 {
 
-	public class XMLHandler
+	public class FileHandler
 	{
         private Thread listenThread;
 		
