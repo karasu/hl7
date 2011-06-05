@@ -84,17 +84,19 @@ namespace hl7service
 		
 		public string toSQL()
 		{		
-			// TODO: This doesn't work. Does not take into account ending fields.
-			
-			string sqlString = "INSERT INTO " + this.table + " ( ";
+			string sqlString = "INSERT INTO " + this.table + " (";
 			
 			foreach (string key in SQLPatientInfoKeys)
 			{
 				sqlString += "'" + key + "',";
 			}
+
+			// removes final comma
+			sqlString = sqlString.TrimEnd(new char [] {','});
 			
 			sqlString += ") VALUES (";
 			
+			// TODO: what about differences between int and string fields?
 			foreach (string key in SQLPatientInfoKeys)
 			{
 				if (SQLPatientInfo.ContainsKey(key))
@@ -107,6 +109,9 @@ namespace hl7service
 					sqlString += ",";
 				}
 			}
+			
+			// removes final comma
+			sqlString = sqlString.TrimEnd(new char [] {','});
             
 			sqlString += ");";
 
