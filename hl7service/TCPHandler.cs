@@ -43,8 +43,6 @@ namespace hl7service
                 // create a thread to handle communication 
                 // with connected client
 				
-				Console.WriteLine("TCPHandler: Create a thread to handle communication with connected client");
-				
                 Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
                 clientThread.Start(client);
             }
@@ -76,19 +74,18 @@ namespace hl7service
 				
 				try
 				{
-					Console.WriteLine("TCPHandler: block until a client sends a message");
-					
 					bytesRead = clientStream.Read(message, 0, 4096);
 				}
-				catch
+				catch(Exception e)
 				{
-					Console.WriteLine("TCPHandler: a socket error has occured");
+					// A socket error has occured
+					Logger.Fatal(e.Message);
 					break;
 				}
 				
 				if (bytesRead == 0)
 				{
-					Console.WriteLine("TCPHandler: the client has disconnected from the server");
+					Logger.Debug("A client has disconnected from the server");
 					break;
 				}
 				
@@ -100,13 +97,13 @@ namespace hl7service
 
 				if (message[0] != START_OF_BLOCK)
 				{
-					Console.WriteLine("TCPHandler: Not HL7 v2 version, assuming v3");
+					Logger.Debug("Not HL7 v2 version, assuming v3");
 					fileName += ".v3.hl7";
 					hl7v3 = true;
 				}
 				else
 				{
-					Console.WriteLine("TCPHandler: HL7 v2 message received.");
+					Logger.Debug("HL7 v2 message received.");
 					fileName += ".v2.hl7";
 					hl7v3 = false;
 				}
@@ -120,7 +117,7 @@ namespace hl7service
 				}
 				catch (Exception e)
     			{
-        			Console.WriteLine("TCPHandler: Can't save hl7 message. '{0}'", e);
+					Logger.Fatal("Can't write message to disk: " + e.Message);
     			}
 				
 				if (hl7v3 == false)
@@ -150,7 +147,7 @@ namespace hl7service
 					}
 					catch (Exception e)
         			{
-            			Console.WriteLine("TCPHandler: Can't send ack message. '{0}'", e);
+						Logger.Fatal("Can't send ack message: " + e.Message);
         			}
 				}
 				

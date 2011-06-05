@@ -19,8 +19,6 @@ namespace hl7service
         {
 			this.folder = folder;
 
-			Console.WriteLine("FileHandler: new thread started");
-
 			this.listenThread = new Thread(new ThreadStart(WatchForFiles));
 			this.listenThread.Start();
         }
@@ -37,16 +35,7 @@ namespace hl7service
 			
             while (true)
             {
-				/*
-                // blocks until a client has connected to the server
-                TcpClient client = this.tcpListener.AcceptTcpClient();
-
-                // create a thread to handle communication 
-                // with connected client
-                Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
-                clientThread.Start(client);
-                */
-				
+				// Wait for changes on the designated folder
 				System.Threading.Thread.Sleep(1000);
             }
         }
@@ -56,7 +45,7 @@ namespace hl7service
 			// Create a new FileSystemWatcher.
 			watcher = new FileSystemWatcher();
 	
-			// Set the filter to only catch hl7 files.
+			// Set the filter to only catch our hl7 files.
 			watcher.Filter = "*.hl7";
 
 			// Subscribe to the Created event.
@@ -67,22 +56,20 @@ namespace hl7service
 
 			// Enable the FileSystemWatcher events.
 			watcher.EnableRaisingEvents = true;
-			
-			Console.WriteLine("FileHandler: FileSystemWatcher created.");
 		}
 		
 		void watcher_FileCreated(object sender, FileSystemEventArgs e)
 		{
 			// A new file has been created
-            // Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
-            // clientThread.Start(client);
-			
+
+			// We don't start a new thread here, just process one file at a time.
 			ProcessFile(e.FullPath);
 		}
 		
 		void ProcessPreviousExistingFiles()
 		{
-			// Process the list of files found in the directory.
+			// Process the list of files found in the directory when the service is started.
+			
         	string [] fileEntries = Directory.GetFiles(this.folder);
 			
 			foreach(string fileName in fileEntries)
@@ -91,6 +78,7 @@ namespace hl7service
 				{
             		if (ProcessFile(fileName))
 					{
+						// once processed we delete it.
 						// File.Delete(fileName);
 					}
 				}
@@ -102,9 +90,9 @@ namespace hl7service
 			bool hl7v2 = false;
 			bool hl7v3 = false;
 			
- 			Console.WriteLine("FileHandler: Reading '{0}'.", fileName);
-			
 			string hl7message = string.Empty;
+			
+			Logger.Debug("Processing " + fileName);
 			
 			try
 			{
@@ -119,7 +107,7 @@ namespace hl7service
 			}	
 			catch(Exception e)
 			{
-				Console.WriteLine(e.ToString());
+				Logger.Fatal(e.Message);
 			}				
 			
 			PatientInfo p = new PatientInfo();
@@ -154,33 +142,11 @@ namespace hl7service
 				p.fromHL7v3(hl7message);
 				p.store();
 			}
-			
-			
-			/*
-			XmlTextReader reader = new XmlTextReader(fileName);
-
-            while (reader.Read())
-            {
-                switch (reader.NodeType)
-                {
-                    case XmlNodeType.Element:
-                        Console.Write("<" + reader.Name);
-                        while (reader.MoveToNextAttribute())
-                            Console.Write(" " + reader.Name + "='" + reader.Value + "'");
-                            Console.WriteLine(">");
-                        break;
-
-                    case XmlNodeType.Text:
-                        Console.WriteLine (reader.Value);
-                        break;
-                    case XmlNodeType.EndElement: //Mostrar el final del elemento.
-                        Console.Write("</" + reader.Name);
-                        Console.WriteLine(">");
-                        break;
-                }
-            }
-            */
-			
+			else
+			{
+				return false;
+			}
+		
 			return true;
         }
 	}

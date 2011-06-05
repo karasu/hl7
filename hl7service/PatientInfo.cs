@@ -89,19 +89,23 @@ namespace hl7service
 		
 		public string toSQL()
 		{		
-			// TODO must be rewritten using StringDictionary
-			string sqlString = "INSERT INTO " + this.table + " ( " +
-				"IdPersona,Tipo,Referencia,Nombre,Nombre1,Apellido1,Apellido2,NHC,Alta) " +
-				"VALUES (" +
-				this.IdPersona.ToString() + "," +
-				this.Tipo.ToString() + "," +
-				"'" + this.Referencia + "'," +
-                "'" + this.Nombre + "'," +
-                "'" + this.Nombre1 + "'," +
-                "'" + this.Apellido1 + "'," +
-                "'" + this.Apellido2 + "'," +
-                "'" + this.NHC + "'," +
-                "'" + this.Alta.ToString() + "');";
+			// TODO: This doesn't work. Does not take into account ending fields.
+			
+			string sqlString = "INSERT INTO " + this.table + " ( ";
+			
+			foreach (string key in SQLPatientInfoKeys)
+			{
+				sqlString += key + "',";
+			}
+			
+			sqlString += ") VALUES (";
+			
+			foreach (string key in SQLPatientInfoKeys)
+			{
+				sqlString += "'" + SQLPatientInfo[key] + "',";
+			}
+            
+			sqlString += "');";
 
 			return sqlString;
 		}
@@ -114,9 +118,9 @@ namespace hl7service
 			
 			string sqlString = this.toSQL();
 					
-			Console.WriteLine("PatientInfo connection string: " + this.connectionString);
+			Logger.Debug("PatientInfo connection string: " + this.connectionString);
 			
-			Console.WriteLine("PatientInfo SQL Command: " + sqlString);			
+			Logger.Debug("PatientInfo SQL Command: " + sqlString);			
 			
 			// store
 
@@ -136,7 +140,7 @@ namespace hl7service
 			}
 			catch(Exception e)
 			{
-				Console.WriteLine(e.ToString());
+				Logger.Fatal("Can't open connection to database server: " + e.ToString());
 			}
 		}
 
@@ -149,6 +153,31 @@ namespace hl7service
 		public string toHL7v3()
 		{
 			// TODO
+						/*
+			XmlTextReader reader = new XmlTextReader(fileName);
+
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        Console.Write("<" + reader.Name);
+                        while (reader.MoveToNextAttribute())
+                            Console.Write(" " + reader.Name + "='" + reader.Value + "'");
+                            Console.WriteLine(">");
+                        break;
+
+                    case XmlNodeType.Text:
+                        Console.WriteLine (reader.Value);
+                        break;
+                    case XmlNodeType.EndElement: //Mostrar el final del elemento.
+                        Console.Write("</" + reader.Name);
+                        Console.WriteLine(">");
+                        break;
+                }
+            }
+            */
+
 			return "";
 		}
 		
@@ -173,7 +202,7 @@ namespace hl7service
 				}
 			}
 			
-			// Now get hl7v2 fields that we need and put them in our SQL fields
+			// TODO: Now get hl7v2 fields that we need and put them in our SQL fields
 			
 			
 		}
@@ -181,6 +210,30 @@ namespace hl7service
 		public void fromHL7v3(string xml)
 		{
 			// TODO		
+			/*
+			XmlTextReader reader = new XmlTextReader(fileName);
+
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        Console.Write("<" + reader.Name);
+                        while (reader.MoveToNextAttribute())
+                            Console.Write(" " + reader.Name + "='" + reader.Value + "'");
+                            Console.WriteLine(">");
+                        break;
+
+                    case XmlNodeType.Text:
+                        Console.WriteLine (reader.Value);
+                        break;
+                    case XmlNodeType.EndElement: //Mostrar el final del elemento.
+                        Console.Write("</" + reader.Name);
+                        Console.WriteLine(">");
+                        break;
+                }
+            }
+            */
 		}
 	}
 }

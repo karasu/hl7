@@ -3,6 +3,7 @@ mkdir -p /tmp/hl7
 #rm /tmp/hl7/*.hl7
 cp -v ~/hl7/hl7service/bin/Debug/hl7service.exe /tmp/hl7
 cp -v ~/hl7/hl7TCPClient/bin/Debug/hl7TCPClient.exe /tmp/hl7
+cp -v ~/hl7/run /tmp/hl7
 #echo "Starting TCP/File Server..."
 #cd /tmp/hl7
 #./hl7service.exe &

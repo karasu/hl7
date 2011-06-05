@@ -1,0 +1,2 @@
+#!/bin/sh
+mono-service2 --debug hl7service.exe
