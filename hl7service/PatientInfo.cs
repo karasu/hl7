@@ -197,7 +197,6 @@ namespace hl7service
 				for (int index = 0; index < hl7v2PatientInfoKeys.Length; index++)
 				{
 					string s = split[index];
-					Console.WriteLine(s);
 					hl7v2PatientInfo.Add(hl7v2PatientInfoKeys[index],s);
 				}
 			}
