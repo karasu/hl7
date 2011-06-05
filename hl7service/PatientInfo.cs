@@ -14,18 +14,18 @@ namespace hl7service
 		// SQL Patient info
 		public string table = "SCAPersona";
 
-		public StringDictionary SQLPatientInfo = new StringDictionary();
-		public string [] SQLPatientInfoKeys = new string [] {
+		protected StringDictionary SQLPatientInfo = new StringDictionary();
+		protected string [] SQLPatientInfoKeys = new string [] {
 			"IdPersona", "Tipo", "Referencia", "Nombre", "Nombre1",
 			"Apellido1", "Apellido2", "NHC", "Alta" };
 		
 		// HL7 v2 Patient info
 		
-		public string PATIENT_ID = "PID";
-		public string FIELD_SEPARATOR = "|";
-		public StringDictionary hl7v2PatientInfo = new StringDictionary();
+		protected string PATIENT_ID = "PID";
+		protected string FIELD_SEPARATOR = "|";
+		protected StringDictionary hl7v2PatientInfo = new StringDictionary();
 
-		public string [] hl7v2PatientInfoKeys = new string [] {
+		protected string [] hl7v2PatientInfoKeys = new string [] {
 			"PID",
 			"PatientID","ExternalID","InternalID","AlternatePatientID","PatientName","MothersMaidenName",
 			"DateTimeofBirth","Sex","PatientAlias","Race","PatientAddress","CountyCode","PhoneNumberHome",
@@ -34,7 +34,8 @@ namespace hl7service
 			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
 			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
 		
-		 
+		protected StringDictionary hl7v2toSQL = new StringDictionary();
+		
 		public PatientInfo()
 		{
 			SQLServerInfo sqlInfo = new SQLServerInfo();
@@ -43,24 +44,18 @@ namespace hl7service
 			
 			SQLPatientInfo.Clear();
 			hl7v2PatientInfo.Clear();
-		}
-
-		public PatientInfo (SQLServerInfo sqlInfo)
-		{
-			this.connectionString = sqlInfo.getConnectionString();
 			
-			SQLPatientInfo.Clear();
-			hl7v2PatientInfo.Clear();
+			createHL7v2toSQL();
 		}
 		
-		public PatientInfo (string connectionString)
+		public void createHL7v2toSQL()
 		{
-			this.connectionString = connectionString;
+			hl7v2toSQL.Clear();
 			
-			SQLPatientInfo.Clear();
-			hl7v2PatientInfo.Clear();
+			hl7v2toSQL.Add("PatientName", "Nombre");
+			hl7v2toSQL.Add("MothersMaidenName", "Apellido2");
 		}
-			
+	
 		public void fromSQL()
 		{
 			// TODO : this is just sample code!
@@ -95,17 +90,25 @@ namespace hl7service
 			
 			foreach (string key in SQLPatientInfoKeys)
 			{
-				sqlString += key + "',";
+				sqlString += "'" + key + "',";
 			}
 			
 			sqlString += ") VALUES (";
 			
 			foreach (string key in SQLPatientInfoKeys)
 			{
-				sqlString += "'" + SQLPatientInfo[key] + "',";
+				if (SQLPatientInfo.ContainsKey(key))
+				{
+					sqlString += "'" + SQLPatientInfo[key] + "',";
+				}
+				else
+				{
+					// no value given for this field
+					sqlString += ",";
+				}
 			}
             
-			sqlString += "');";
+			sqlString += ");";
 
 			return sqlString;
 		}
@@ -129,7 +132,6 @@ namespace hl7service
 
 			try 
 			{
-
 				myConnection.Open();
 				
 				Console.WriteLine("Connection opened");
@@ -199,11 +201,39 @@ namespace hl7service
 					string s = split[index];
 					hl7v2PatientInfo.Add(hl7v2PatientInfoKeys[index],s);
 				}
+	
+				// Now get hl7v2 fields that we need and put them in our SQL fields
+				SQLPatientInfo.Clear();
+				
+				// agafem els camps que necessitem. És molt xapussero, hauríem de tenir
+				// un diccionari d'equivalències.
+				
+				foreach (string hl7v2key in hl7v2PatientInfoKeys)
+				{
+					// get SQL equivalency
+					if (hl7v2toSQL.ContainsKey(hl7v2key))
+					{
+						string sqlkey = hl7v2toSQL[hl7v2key];
+						
+						SQLPatientInfo.Add(sqlkey, hl7v2PatientInfo[hl7v2key]);
+					}
+				}
+				
 			}
-			
-			// TODO: Now get hl7v2 fields that we need and put them in our SQL fields
-			
-			
+		}
+		
+		public void showStringDictionary(StringDictionary sd)
+		{
+			DictionaryEntry[] dict = new DictionaryEntry[sd.Count];
+      		sd.CopyTo(dict, 0);
+
+			// Displays the values in the array.
+			Logger.Debug("Displays the elements in the array:" );
+
+			for (int i=0; i<dict.Length; i++)
+			{
+				Logger.Debug(dict[i].Key + "=" + dict[i].Value);
+			}
 		}
 		
 		public void fromHL7v3(string xml)
