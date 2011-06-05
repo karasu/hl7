@@ -51,6 +51,18 @@ namespace hl7service
 		public void createHL7v2toSQL()
 		{
 			hl7v2toSQL.Clear();
+
+			/*
+			"IdPersona", identificador intern autonumeric. No l'has de tenir en compte, ja q al introduir els altres aquest es completara sol
+ 			"Tipo", tipo = 1 es un doctor, tipo = 2 es un pacient. Aquest valor l'hauras de posar sempre tu.
+ 			"Referencia", no es fa servir
+ 			"Nombre", = "Apellido1 + Apellido2, Nombre1". l'has d'emplenar tu
+			"Nombre1", nom del pacient. Es obligatori un valor.
+			"Apellido1", cognom
+ 			"Apellido2", 2n cognom
+ 			"NHC", numero historial clinic. Individual per cada pacient. Obligatori
+ 			"Alta" data que s'ha introduit bd
+		 */
 			
 			hl7v2toSQL.Add("PatientName", "Nombre");
 			hl7v2toSQL.Add("MothersMaidenName", "Apellido2");
