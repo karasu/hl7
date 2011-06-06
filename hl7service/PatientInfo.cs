@@ -14,15 +14,11 @@ namespace hl7service
 		// SQL Patient info
 		public string table = "SCAPersona";
 
-		protected StringDictionary SQLPatientInfo = new StringDictionary();
-		protected string [] SQLPatientInfoKeys = new string [] {
-			"IdPersona", "Tipo", "Referencia", "Nombre", "Nombre1",
-			"Apellido1", "Apellido2", "NHC", "Alta" };
-		
 		// HL7 v2 Patient info
 		
 		protected string PATIENT_ID = "PID";
 		protected string FIELD_SEPARATOR = "|";
+
 		protected StringDictionary hl7v2PatientInfo = new StringDictionary();
 
 		protected string [] hl7v2PatientInfoKeys = new string [] {
@@ -33,44 +29,20 @@ namespace hl7service
 			"SSNNumber","DriversLicenseNumber","MothersIdentifier","EthnicGroup","BirthPlace",
 			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
 			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
-		
-		protected StringDictionary hl7v2toSQL = new StringDictionary();
-		
+			
 		public PatientInfo()
 		{
 			SQLServerInfo sqlInfo = new SQLServerInfo();
 			
 			this.connectionString = sqlInfo.getConnectionString();
 			
-			SQLPatientInfo.Clear();
 			hl7v2PatientInfo.Clear();
-			
-			createHL7v2toSQL();
 		}
 		
-		public void createHL7v2toSQL()
-		{
-			hl7v2toSQL.Clear();
-
-			/*
-			"IdPersona", identificador intern autonumeric. No l'has de tenir en compte, ja q al introduir els altres aquest es completara sol
- 			"Tipo", tipo = 1 es un doctor, tipo = 2 es un pacient. Aquest valor l'hauras de posar sempre tu.
- 			"Referencia", no es fa servir
- 			"Nombre", = "Apellido1 + Apellido2, Nombre1". l'has d'emplenar tu
-			"Nombre1", nom del pacient. Es obligatori un valor.
-			"Apellido1", cognom
- 			"Apellido2", 2n cognom
- 			"NHC", numero historial clinic. Individual per cada pacient. Obligatori
- 			"Alta" data que s'ha introduit bd
-		 */
-			
-			hl7v2toSQL.Add("PatientName", "Nombre");
-			hl7v2toSQL.Add("MothersMaidenName", "Apellido2");
-		}
-	
 		public void fromSQL()
 		{
 			// TODO : this is just sample code!
+			/*
 			SqlConnection myConnection = new SqlConnection();
 			
 			myConnection.ConnectionString = this.connectionString;
@@ -91,42 +63,78 @@ namespace hl7service
 			catch(Exception e)
 			{
 				Console.WriteLine("PatientInfo: " + e.ToString());
-			}		
+			}
+			*/		
 		}
 		
 		public string toSQL()
 		{		
-			string sqlString = "INSERT INTO " + this.table + " (";
+			string sqlString = "INSERT INTO SCAPersona (IdPersona, Tipo, Referencia, Nombre, Nombre1, Apellido1, Apellido2, NHC, Alta) VALUES (";
 			
-			foreach (string key in SQLPatientInfoKeys)
+			// IdPersona
+			sqlString += ",";
+			
+			// Tipo
+			sqlString += "1,";
+			
+			// Referencia
+			sqlString += "0,";
+			
+			// Calculem quins seran els camps Nombre1, Apellido1 i Apellido2
+			
+			string fullName = hl7v2PatientInfo["PatientName"];
+			
+			string [] split = fullName.Split(new Char [] {'^'}); // separem per ^. Primer ve el 1r cognom i després el nom.
+			
+			string apellido1 = split[0];
+			string apellido2 = string.Empty;
+			if (hl7v2PatientInfo.ContainsKey("MothersMaidenName"))
 			{
-				sqlString += "'" + key + "',";
+				apellido2 = hl7v2PatientInfo["MothersMaidenName"];
 			}
-
-			// removes final comma
-			sqlString = sqlString.TrimEnd(new char [] {','});
-			
-			sqlString += ") VALUES (";
-			
-			// TODO: what about differences between int and string fields?
-			foreach (string key in SQLPatientInfoKeys)
+			string nombre1 = string.Empty;
+			for (int i=1; i<split.Length; i++)
 			{
-				if (SQLPatientInfo.ContainsKey(key))
-				{
-					sqlString += "'" + SQLPatientInfo[key] + "',";
-				}
-				else
-				{
-					// no value given for this field
-					sqlString += ",";
-				}
+				nombre1 += split[i] + " ";
 			}
 			
-			// removes final comma
-			sqlString = sqlString.TrimEnd(new char [] {','});
-            
-			sqlString += ");";
-
+			// Nombre = Apellido1 Apellido2, Nombre1
+			sqlString += "'";
+			if (apellido2.Length > 0)
+			{
+				sqlString += apellido1 + " " + apellido2 + "," + nombre1;
+			}
+			else
+			{
+				sqlString += apellido1 + "," + nombre1;
+			}
+			sqlString += "',";			
+			
+			// Nombre1
+			sqlString += "'";
+			sqlString += nombre1;
+			sqlString += "',";
+			
+			// Apellido1
+			sqlString += "'" + apellido1 + "',";
+			
+			// Apellido2
+         	sqlString += "'" + apellido2 + "',";
+			
+			// NHC
+         	sqlString += "'";
+			if (hl7v2PatientInfo.ContainsKey("InternalID"))
+			{
+				sqlString += hl7v2PatientInfo["InternalID"];
+			}
+         	sqlString += "',";
+			
+			// Alta
+			
+			DateTime today = DateTime.Today;
+			
+			sqlString += "'" + today.ToString("yyyyMMdd") + "');";
+			
 			return sqlString;
 		}
 		
@@ -203,6 +211,8 @@ namespace hl7service
 		public void fromHL7v2(string text)
 		{
 			// Parse HL7 v2 Message
+			
+			// search for PID field
 			int first = text.IndexOf(PATIENT_ID);
 			
 			if (first != -1)
@@ -218,24 +228,6 @@ namespace hl7service
 					string s = split[index];
 					hl7v2PatientInfo.Add(hl7v2PatientInfoKeys[index],s);
 				}
-	
-				// Now get hl7v2 fields that we need and put them in our SQL fields
-				SQLPatientInfo.Clear();
-				
-				// agafem els camps que necessitem. És molt xapussero, hauríem de tenir
-				// un diccionari d'equivalències.
-				
-				foreach (string hl7v2key in hl7v2PatientInfoKeys)
-				{
-					// get SQL equivalency
-					if (hl7v2toSQL.ContainsKey(hl7v2key))
-					{
-						string sqlkey = hl7v2toSQL[hl7v2key];
-						
-						SQLPatientInfo.Add(sqlkey, hl7v2PatientInfo[hl7v2key]);
-					}
-				}
-				
 			}
 		}
 		
@@ -283,35 +275,12 @@ namespace hl7service
 		}
 		
 		/*
-		public DateTime DateStr2DateTime()
-		{
-			string dateFormat = "ddmmyyyy";
-			
-			if (dateOfBirth != "")
-            {
-                DateTime dummy;
-                if (DateTime.TryParseExact(dateOfBirth, dateFormat, null, DateTimeStyles.None, out dummy))
-                    paramList.personBirthTime = CreatePersonBirthTimeParameter(dateOfBirth);
-                else
-                    Console.WriteLine("Warning: Date of birth is illegal; skipping");
-            }
+		 // yyyymmdd to DateTime
+DateTime myDate;
+myDate = System.DateTime.ParseExact("20050802",
+                                    "yyyyMMdd",
+                                    System.Globalization.CultureInfo.InvariantCulture);
 
-		}
-
-		public string DateTime2Str()
-		{
-			string dateFormat = "ddmmyyyy";
-			
-			if (dateOfBirth != "")
-            {
-                DateTime dummy;
-                if (DateTime.TryParseExact(dateOfBirth, dateFormat, null, DateTimeStyles.None, out dummy))
-                    paramList.personBirthTime = CreatePersonBirthTimeParameter(dateOfBirth);
-                else
-                    Console.WriteLine("Warning: Date of birth is illegal; skipping");
-            }
-
-		}
 		*/
 	}
 }

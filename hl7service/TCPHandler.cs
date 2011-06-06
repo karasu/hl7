@@ -91,7 +91,7 @@ namespace hl7service
 				
 				// message has successfully been received
 				ASCIIEncoding encoder = new ASCIIEncoding();
-				Console.WriteLine(encoder.GetString(message, 0, bytesRead));
+				Logger.Debug(encoder.GetString(message, 0, bytesRead));
 			
 				string fileName = this.folder + "/" + System.Guid.NewGuid().ToString();
 

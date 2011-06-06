@@ -16,6 +16,7 @@ namespace hl7TCPClient
 		{
 			string message = String.Empty;
 			
+			/*
 			message += START_OF_BLOCK;
 			message += "MSH|^~\\&|DDTEK LAB|ELAB-1|DDTEK OE|BLDG14|200502150930||ORU^R01^ORU_R01|CTRL-9876|P|2.4";
 			message += CARRIAGE_RETURN;
@@ -25,6 +26,24 @@ namespace hl7TCPClient
 			message += CARRIAGE_RETURN;
 			message += "OBX|1|SN|1554-5^GLUCOSE^^^POST 12H CFST:MCNC:PT:SER/PLAS:QN||^175|mg/dl|70_105|H|||F";
 			message += CARRIAGE_RETURN;
+			message += END_OF_BLOCK;
+			message += CARRIAGE_RETURN;
+			*/
+			
+			message += START_OF_BLOCK;
+			message += "MSH|^~\\&|OAZIS||||20100826092310||ADT^A04|09585435|P|2.3||||||ASCII";
+			message += CARRIAGE_RETURN;
+			message += "EVN|A04|20100826092310||||201008260921";
+			message += CARRIAGE_RETURN;
+			message += "PID|1||4005181503||Slock^Willy Eduard^^^Dhr.||19400518|M|||Herritakkerlaan 24^^SLEIDINGE^^9940^B^H||09/3574031^^PH||NL|S||26438854^^^^VN|526852365|40051818751||||||B||||N";
+			message += CARRIAGE_RETURN;
+			message += "PD1||||135753^Keereman^Natascha||||||||N";
+			message += CARRIAGE_RETURN;
+			message += "PV1|1|O|AMB1^000^286^001^0^2|NULL|||135753^Keereman^Natascha||000075^Merckx^Luc|1950|||||||000075^Merckx^Luc|0|26438854^^^^VN|1^20100826|04||||||||||||||||||O|||||201008260921";
+			message += CARRIAGE_RETURN;
+			message += "PV2||003^^^04|NULL||||||201008262121|0|||||||||||0|N||||||||T||||||||0///09/";
+			message += CARRIAGE_RETURN;
+			message += "IN1|1|1|407000|Liberale Mutualiteit van Oost-Vlaanderen|Brabantddam^109^GENT^^9000^B|||||||20100101|||||0||||||||||||||||||||||||||||||130/130||40051818751			";
 			message += END_OF_BLOCK;
 			message += CARRIAGE_RETURN;
 			
