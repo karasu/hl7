@@ -281,6 +281,38 @@ namespace hl7service
             }
             */
 		}
+		
+		/*
+		public DateTime DateStr2DateTime()
+		{
+			string dateFormat = "ddmmyyyy";
+			
+			if (dateOfBirth != "")
+            {
+                DateTime dummy;
+                if (DateTime.TryParseExact(dateOfBirth, dateFormat, null, DateTimeStyles.None, out dummy))
+                    paramList.personBirthTime = CreatePersonBirthTimeParameter(dateOfBirth);
+                else
+                    Console.WriteLine("Warning: Date of birth is illegal; skipping");
+            }
+
+		}
+
+		public string DateTime2Str()
+		{
+			string dateFormat = "ddmmyyyy";
+			
+			if (dateOfBirth != "")
+            {
+                DateTime dummy;
+                if (DateTime.TryParseExact(dateOfBirth, dateFormat, null, DateTimeStyles.None, out dummy))
+                    paramList.personBirthTime = CreatePersonBirthTimeParameter(dateOfBirth);
+                else
+                    Console.WriteLine("Warning: Date of birth is illegal; skipping");
+            }
+
+		}
+		*/
 	}
 }
 
