@@ -14,11 +14,11 @@ namespace hl7service
 		private string folder;
 		
 		private FileSystemWatcher watcher = null;
-
+		
         public FileHandler(String folder)
         {
 			this.folder = folder;
-
+			
 			this.listenThread = new Thread(new ThreadStart(WatchForFiles));
 			this.listenThread.Start();
         }
@@ -45,8 +45,8 @@ namespace hl7service
 			// Create a new FileSystemWatcher.
 			watcher = new FileSystemWatcher();
 	
-			// Set the filter to only catch our hl7 files.
-			watcher.Filter = "*.hl7";
+			// Catch any file
+			watcher.Filter = "*.*";
 
 			// Subscribe to the Created event.
 			watcher.Created += new FileSystemEventHandler(watcher_FileCreated);
@@ -58,7 +58,7 @@ namespace hl7service
 			watcher.EnableRaisingEvents = true;
 		}
 		
-		void watcher_FileCreated(object sender, FileSystemEventArgs e)
+		public void watcher_FileCreated(object sender, FileSystemEventArgs e)
 		{
 			// A new file has been created
 
@@ -66,7 +66,7 @@ namespace hl7service
 			ProcessFile(e.FullPath);
 		}
 		
-		void ProcessPreviousExistingFiles()
+		public void ProcessPreviousExistingFiles()
 		{
 			// Process the list of files found in the directory when the service is started.
 			
@@ -74,23 +74,33 @@ namespace hl7service
 			
 			foreach(string fileName in fileEntries)
 			{
-				if (fileName.EndsWith("hl7"))
-				{
-            		if (ProcessFile(fileName))
-					{
-						// once processed we delete it.
-						// File.Delete(fileName);
-					}
-				}
+				ProcessFile(fileName);
 			}
 		}
 		
-        public bool ProcessFile(string fileName)
+        public void ProcessFile(string fileName)
         {
 			bool hl7v2 = false;
 			bool hl7v3 = false;
+			bool recognized = false;
+
+			string [] extensions = new string [] {"txt","csv","hl7"};
 			
-			string hl7message = string.Empty;
+			foreach(string ext in extensions)
+			{
+				if (fileName.EndsWith(ext))
+				{
+					recognized = true;
+				}
+			}
+			
+			if (!recognized)
+			{
+				Logger.Debug("Wrong format. Not a patient file");
+				return;
+			}
+			
+			string message = string.Empty;
 			
 			Logger.Debug("Processing " + fileName);
 			
@@ -100,8 +110,8 @@ namespace hl7service
 				
 				while (!infile.EndOfStream)
 				{
-					hl7message += infile.ReadLine();
-					hl7message += "\n";
+					message += infile.ReadLine();
+					message += "\n";
 				}
 				
 			}	
@@ -112,41 +122,54 @@ namespace hl7service
 			
 			PatientInfo p = new PatientInfo();
 			
-			string searchFor = ".v2.hl7";
-			
-			int first = fileName.IndexOf(searchFor);
-			
-			if (first != -1)
+			if (fileName.EndsWith("hl7"))
 			{
-				hl7v2 = true;
-			}
-			else
-			{
-				searchFor = ".v3.hl7";
+				string searchFor = ".v2.hl7";
 				
-				first = fileName.IndexOf(searchFor);
+				int first = fileName.IndexOf(searchFor);
 				
 				if (first != -1)
 				{
-					hl7v3 = true;
+					hl7v2 = true;
 				}
-			}
+				else
+				{
+					searchFor = ".v3.hl7";
+					
+					first = fileName.IndexOf(searchFor);
+					
+					if (first != -1)
+					{
+						hl7v3 = true;
+					}
+				}
+	
+				if (hl7v2)
+				{
+					p.fromHL7v2(message);
 
-			if (hl7v2)
-			{
-				p.fromHL7v2(hl7message);
-				p.store();
+				}
+				else if (hl7v3)
+				{
+					p.fromHL7v3(message);
+				}
+
 			}
-			else if (hl7v3)
+			else if (fileName.EndsWith("csv"))
 			{
-				p.fromHL7v3(hl7message);
-				p.store();
+				p.fromCSV(message);
 			}
-			else
+			else if (fileName.EndsWith("txt"))
 			{
-				return false;
+				p.fromTXT(message);
 			}
 		
+			
+			p.toSQL();
+			
+			// everything ok, we can delete the file
+			// File.Delete(fileName);
+
 			return true;
         }
 	}

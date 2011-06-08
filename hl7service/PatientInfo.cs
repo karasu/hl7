@@ -67,18 +67,12 @@ namespace hl7service
 			*/		
 		}
 		
-		public string toSQL()
+		public void toSQL()
 		{		
-			string sqlString = "INSERT INTO SCAPersona (IdPersona, Tipo, Referencia, Nombre, Nombre1, Apellido1, Apellido2, NHC, Alta) VALUES (";
-			
-			// IdPersona
-			sqlString += ",";
+			string sqlString = "INSERT INTO SCAPersona (Tipo, Nombre, Nombre1, Apellido1, Apellido2, NHC, Alta) VALUES (";
 			
 			// Tipo
-			sqlString += "1,";
-			
-			// Referencia
-			sqlString += "0,";
+			sqlString += "2,";
 			
 			// Calculem quins seran els camps Nombre1, Apellido1 i Apellido2
 			
@@ -135,17 +129,6 @@ namespace hl7service
 			
 			sqlString += "'" + today.ToString("yyyyMMdd") + "');";
 			
-			return sqlString;
-		}
-		
-		public void store()
-		{
-			// store patient info in database
-			
-			// get SQL
-			
-			string sqlString = this.toSQL();
-					
 			Logger.Debug("PatientInfo connection string: " + this.connectionString);
 			
 			Logger.Debug("PatientInfo SQL Command: " + sqlString);			
@@ -159,8 +142,6 @@ namespace hl7service
 			{
 				myConnection.Open();
 				
-				Console.WriteLine("Connection opened");
-				
 				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 				
 				myCmd.ExecuteNonQuery();
@@ -170,7 +151,7 @@ namespace hl7service
 				Logger.Fatal("Can't open connection to database server: " + e.ToString());
 			}
 		}
-
+		
 		public string toHL7v2()
 		{
 			// TODO
@@ -229,6 +210,16 @@ namespace hl7service
 					hl7v2PatientInfo.Add(hl7v2PatientInfoKeys[index],s);
 				}
 			}
+		}
+		
+		public void fromCSV(string text)
+		{
+			
+		}
+
+		public void fromTXT(string text)
+		{
+			
 		}
 		
 		public void showStringDictionary(StringDictionary sd)
