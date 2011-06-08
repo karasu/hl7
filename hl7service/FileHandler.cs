@@ -146,27 +146,24 @@ namespace hl7service
 	
 				if (hl7v2)
 				{
-					p.fromHL7v2(message);
+					p.fromHL7v2toSQL(message);
 
 				}
 				else if (hl7v3)
 				{
-					p.fromHL7v3(message);
+					p.fromHL7v3toSQL(message);
 				}
 
 			}
 			else if (fileName.EndsWith("csv"))
 			{
-				p.fromCSV(message);
+				p.fromCSVtoSQL(message);
 			}
 			else if (fileName.EndsWith("txt"))
 			{
-				p.fromTXT(message);
+				p.fromTXTtoSQL(message);
 			}
 		
-			
-			p.toSQL();
-			
 			// everything ok, we can delete the file
 			// File.Delete(fileName);
 

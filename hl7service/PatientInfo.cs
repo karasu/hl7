@@ -29,6 +29,14 @@ namespace hl7service
 			"SSNNumber","DriversLicenseNumber","MothersIdentifier","EthnicGroup","BirthPlace",
 			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
 			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
+		
+		/*
+		protected StringDictionary sqlPatientInfo = new StringDictionary();
+		protected string [] sqlPatientInfoKeys = new string [] { 
+			"Tipo", "Referencia", "Nombre", "Nombre1", "Apellido1", "Apellido2", "NHC",
+			"Field1", "Field2", "Field3", "Field4", "Field5", "Field6", "Field7", "Field8", "Field9", "Field10",
+			"Alta" };
+		*/
 			
 		public PatientInfo()
 		{
@@ -40,6 +48,14 @@ namespace hl7service
 		}
 		
 		public void fromSQL()
+		{
+		}
+		
+		protected void toSQL()
+		{		
+		}
+		
+		public string fromSQLtoHL7v2()
 		{
 			// TODO : this is just sample code!
 			/*
@@ -65,10 +81,40 @@ namespace hl7service
 				Console.WriteLine("PatientInfo: " + e.ToString());
 			}
 			*/		
+			return "";
+		}
+
+		public string fromSQLtoHL7v3()
+		{
+			// TODO
+
+			return "";
 		}
 		
-		public void toSQL()
-		{		
+		public void fromHL7v2toSQL(string text)
+		{
+			// Parse HL7 v2 Message
+			
+			// search for PID field
+			int first = text.IndexOf(PATIENT_ID);
+			
+			if (first != -1)
+			{
+				hl7v2PatientInfo.Clear();
+				
+				// Read patient info
+				
+				string [] split = text.Substring(first).Split(new Char [] {'|'});
+				
+				for (int index = 0; index < hl7v2PatientInfoKeys.Length; index++)
+				{
+					string s = split[index];
+					hl7v2PatientInfo.Add(hl7v2PatientInfoKeys[index],s);
+				}
+			}
+			
+			// Now convert it to SQL
+			
 			string sqlString = "INSERT INTO SCAPersona (Tipo, Nombre, Nombre1, Apellido1, Apellido2, NHC, Alta) VALUES (";
 			
 			// Tipo
@@ -129,11 +175,13 @@ namespace hl7service
 			
 			sqlString += "'" + today.ToString("yyyyMMdd") + "');";
 			
-			Logger.Debug("PatientInfo connection string: " + this.connectionString);
-			
+			store(sqlString);			
+		}
+		
+		protected void store(string sqlString)
+		{
+			Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 			Logger.Debug("PatientInfo SQL Command: " + sqlString);			
-			
-			// store
 
 			SqlConnection myConnection = new SqlConnection();		
 			myConnection.ConnectionString = this.connectionString;
@@ -150,93 +198,43 @@ namespace hl7service
 			{
 				Logger.Fatal("Can't open connection to database server: " + e.ToString());
 			}
+			
 		}
 		
-		public string toHL7v2()
+		public void fromCSVtoSQL(string text)
 		{
-			// TODO
-			return "";
+			/*
+			 * */
+			
 		}
 
-		public string toHL7v3()
+		public void fromTXTtoSQL(string text)
 		{
-			// TODO
-						/*
-			XmlTextReader reader = new XmlTextReader(fileName);
-
-            while (reader.Read())
-            {
-                switch (reader.NodeType)
-                {
-                    case XmlNodeType.Element:
-                        Console.Write("<" + reader.Name);
-                        while (reader.MoveToNextAttribute())
-                            Console.Write(" " + reader.Name + "='" + reader.Value + "'");
-                            Console.WriteLine(">");
-                        break;
-
-                    case XmlNodeType.Text:
-                        Console.WriteLine (reader.Value);
-                        break;
-                    case XmlNodeType.EndElement: //Mostrar el final del elemento.
-                        Console.Write("</" + reader.Name);
-                        Console.WriteLine(">");
-                        break;
-                }
-            }
-            */
-
-			return "";
-		}
-		
-		public void fromHL7v2(string text)
-		{
-			// Parse HL7 v2 Message
+			hl7v2PatientInfo.Clear();
 			
-			// search for PID field
-			int first = text.IndexOf(PATIENT_ID);
+			// Read patient info
 			
-			if (first != -1)
+			string [] split = text.Substring(first).Split(new Char [] {'\t'});
+			
+			string sqlString = string.Empty;
+			
+			foreach (string s in split)
 			{
-				hl7v2PatientInfo.Clear();
-				
-				// Read patient info
-				
-				string [] split = text.Substring(first).Split(new Char [] {'|'});
-				
-				for (int index = 0; index < hl7v2PatientInfoKeys.Length; index++)
-				{
-					string s = split[index];
-					hl7v2PatientInfo.Add(hl7v2PatientInfoKeys[index],s);
-				}
-			}
-		}
-		
-		public void fromCSV(string text)
-		{
+			}	
 			
-		}
+			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta
+			
+			/*
+			 * 
+ 1	0	Slock,Willy Eduard   Dhr. 	Willy Eduard   Dhr. 	Slock		4005181503	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	2011-06-06
 
-		public void fromTXT(string text)
-		{
+			 * */
+			
+			// Each TXT can contain more than one patient info
 			
 		}
 		
-		public void showStringDictionary(StringDictionary sd)
-		{
-			DictionaryEntry[] dict = new DictionaryEntry[sd.Count];
-      		sd.CopyTo(dict, 0);
-
-			// Displays the values in the array.
-			Logger.Debug("Displays the elements in the array:" );
-
-			for (int i=0; i<dict.Length; i++)
-			{
-				Logger.Debug(dict[i].Key + "=" + dict[i].Value);
-			}
-		}
-		
-		public void fromHL7v3(string xml)
+		public void fromHL7v3toSQL(string xml)
 		{
 			// TODO		
 			/*
@@ -264,15 +262,6 @@ namespace hl7service
             }
             */
 		}
-		
-		/*
-		 // yyyymmdd to DateTime
-DateTime myDate;
-myDate = System.DateTime.ParseExact("20050802",
-                                    "yyyyMMdd",
-                                    System.Globalization.CultureInfo.InvariantCulture);
-
-		*/
 	}
 }
 
