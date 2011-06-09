@@ -30,7 +30,13 @@ namespace hl7service
 			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
 			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
 		
-		
+		protected StringDictionary sql = new StringDictionary();
+					
+		protected string [] sqlKeys = new string [] {
+			"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
+			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
+			"Field9","Field10","Alta" };
+	
 			
 		public PatientInfo()
 		{
@@ -156,10 +162,10 @@ namespace hl7service
 
 			sql.Add("Alta", today.ToString("yyyyMMdd"));
 			
-			storeSQL(sql);
+			storeSQL();
 		}
 		
-		protected void storeSQL(StringDictionary sql)
+		protected void storeSQL()
 		{
 			Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 					
@@ -218,9 +224,43 @@ namespace hl7service
 		
 		public void fromCSVtoSQL(string text)
 		{
-			/*
-			 * */
+			string [] lines = Regex.Split(text, "\r\n");
 			
+			foreach (string line in lines)
+			{
+				// Hem de recòrrer la línia. Les comes separen els camps, però s'ha de vigilar amb les
+				// comes que estan dins de les cometes que marquen un string.
+				
+				sql.Clear();
+				
+				int i = 0;
+				bool insideString = false;
+				string field = string.Empty;
+							
+				foreach(string key in sqlKeys)
+				{
+					while (i < line.Length)
+					{
+						if (line[i] == '\"')
+						{
+							insideString = !insideString;
+						}
+						else if (line[i] == ',' && !insideString)
+						{
+							sql.Add(key, field);
+							field = string.Empty;
+						}
+						else
+						{
+							field += line[i];
+						}
+
+						i++;
+					}
+				}
+				
+				storeSQL();
+			}
 		}
 
 		public void fromTXTtoSQL(string text)
@@ -233,12 +273,7 @@ namespace hl7service
 				string [] split = line.Split(new Char [] {'\t'});
 				
 				// Convert it to SQL
-				StringDictionary sql = new StringDictionary();
-				
-				string [] sqlKeys = new string [] {
-					"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
-					"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
-					"Field9","Field10","Alta" };
+				sql.Clear();
 
 				if (sqlKeys.Length == split.Length)
 				{
@@ -251,20 +286,15 @@ namespace hl7service
 				{
 					Logger.Fatal("Wrong file format (TXT). Remember to separate fields with a TAB character.");
 				}
+			
+				// Alta
 				
-			
-			// Alta
-			
-			DateTime today = DateTime.Today;
-			
-			sqlString += "'" + today.ToString("yyyyMMdd") + "');";
-			
-			store(sqlString);			
-			
-			
-			
-			// Each TXT can contain more than one patient info
-			
+				DateTime today = DateTime.Today;
+				
+				sql.Add("Alta", today.ToString("yyyyMMdd"));
+
+				storeSQL();
+			}			
 		}
 		
 		public void fromHL7v3toSQL(string xml)

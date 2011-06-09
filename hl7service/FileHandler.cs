@@ -6,7 +6,6 @@ using System.Threading;
 
 namespace hl7service
 {
-
 	public class FileHandler
 	{
         private Thread listenThread;
@@ -166,8 +165,6 @@ namespace hl7service
 		
 			// everything ok, we can delete the file
 			// File.Delete(fileName);
-
-			return true;
         }
 	}
 }
