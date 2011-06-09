@@ -1,5 +1,6 @@
-Very simplistic TCP/IP service to handle Health Level Seven files and add
-patient info to a SQL Server database.
+Very simplistic TCP/IP service to handle Health Level Seven files, plain
+text files and csv files.
+
+It adds patient info to a SQL Server database.
+
 Also a simple TCP/IP client has been developed to test the service.
-
-
