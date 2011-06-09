@@ -136,6 +136,8 @@ namespace hl7service
 					message += "\n";
 				}
 				
+				infile.Close();
+				
 			}	
 			catch(Exception e)
 			{
@@ -187,7 +189,7 @@ namespace hl7service
 			}
 		
 			// File.Delete(fileName);
-			File.Move(fileName, fileName + ".done");
+			// File.Move(fileName, fileName + ".done");
         }
 	}
 }

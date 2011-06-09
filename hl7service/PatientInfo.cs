@@ -3,7 +3,6 @@ using System;
 using System.Data.SqlClient;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Text.RegularExpressions;
 
 namespace hl7service
 {
@@ -36,6 +35,8 @@ namespace hl7service
 			"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
 			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
 			"Field9","Field10","Alta" };
+		protected string [] field_keys = new string [] {
+			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8","Field9","Field10" };
 	
 			
 		public PatientInfo()
@@ -45,50 +46,6 @@ namespace hl7service
 			this.connectionString = sqlInfo.getConnectionString();
 			
 			hl7v2.Clear();
-		}
-		
-		public void fromSQL()
-		{
-		}
-		
-		protected void toSQL()
-		{		
-		}
-		
-		public string fromSQLtoHL7v2()
-		{
-			// TODO : this is just sample code!
-			/*
-			SqlConnection myConnection = new SqlConnection();
-			
-			myConnection.ConnectionString = this.connectionString;
-			
-			try 
-			{
-				myConnection.Open();
-			    SqlDataReader myReader = null;
-			    SqlCommand    myCommand = new SqlCommand("select * from table", 
-			                                             myConnection);
-			    myReader = myCommand.ExecuteReader();
-			    while(myReader.Read())
-			    {
-			        Console.WriteLine(myReader["Column1"].ToString());
-			        Console.WriteLine(myReader["Column2"].ToString());
-			    }
-			}
-			catch(Exception e)
-			{
-				Console.WriteLine("PatientInfo: " + e.ToString());
-			}
-			*/		
-			return "";
-		}
-
-		public string fromSQLtoHL7v3()
-		{
-			// TODO
-
-			return "";
 		}
 		
 		public void fromHL7v2toSQL(string text)
@@ -113,9 +70,11 @@ namespace hl7service
 			}
 			
 			// Now convert it to SQL
-			StringDictionary sql = new StringDictionary();
+			sql.Clear();
 			
 			sql.Add("Tipo","2");
+			
+			sql.Add("Referencia", "NULL");
 
 			// Calculem quins seran els camps Nombre1, Apellido1 i Apellido2
 			
@@ -125,7 +84,7 @@ namespace hl7service
 			string [] split = fullName.Split(new Char [] {'^'});
 			
 			sql.Add("Apellido1", split[0]);
-			sql.Add("Apellido2", string.Empty);
+			sql.Add("Apellido2", "NULL");
 			
 			if (hl7v2.ContainsKey("MothersMaidenName"))
 			{
@@ -140,7 +99,7 @@ namespace hl7service
 			}
 			
 			// Nombre = Apellido1 Apellido2, Nombre1		
-			if (sql["Apellido2"].Length > 0)
+			if (sql["Apellido2"] != "NULL")
 			{
 				sql.Add("Nombre", sql["Apellido1"] + " " + sql["Apellido2"] + "," + sql["Nombre1"]);
 			}
@@ -150,10 +109,17 @@ namespace hl7service
 			}
 			
 			// NHC
-			sql.Add("NHC", string.Empty);
+			sql.Add("NHC", "NULL");
 			if (hl7v2.ContainsKey("InternalID"))
 			{
 				sql["NHC"] = hl7v2["InternalID"];
+			}
+			
+			// Field fields (not used)
+			
+			foreach (string key in field_keys)
+			{
+				sql.Add(key, "NULL");
 			}
 			
 			// Alta
@@ -172,33 +138,26 @@ namespace hl7service
 			// Create SQL String
 			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta			toSQL();
 			
-			string sqlString = "INSERT INTO SCAPersona (Tipo, Nombre, Nombre1, Apellido1, Apellido2, NHC, ";
+			string sqlString = "INSERT INTO SCAPersona (Tipo, Referencia, Nombre, Nombre1, Apellido1, Apellido2, NHC, ";
 
-			string [] field_keys = new string [] { "Field1, Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10" };
-
-			if (sql.ContainsKey("Field1"))
+			foreach (string key in field_keys)
 			{
-				foreach (string key in field_keys)
-				{
-					sqlString += key + ", ";
-				}
-			}	
+				sqlString += key + ", ";
+			}
 
 			sqlString += "Alta) VALUES (";
 			
 			sqlString += sql["Tipo"] + ",";
+			sqlString += sql["Referencia"] + ",";
 			sqlString += "'" + sql["Nombre"] + "',";
 			sqlString += "'" + sql["Nombre1"] + "',";
 			sqlString += "'" + sql["Apellido1"] + "',";
 			sqlString += "'" + sql["Apellido2"] + "',";
          	sqlString += "'" + sql["NHC"] + "',";
 
-			if (sql.ContainsKey("Field1"))
+			foreach (string key in field_keys)
 			{
-				foreach (string key in field_keys)
-				{
-					sqlString += "'" + sql[key] + "',";
-				}
+				sqlString += "'" + sql[key] + "',";
 			}
 
 			sqlString += "'" + sql["Alta"] + "');";
@@ -224,7 +183,7 @@ namespace hl7service
 		
 		public void fromCSVtoSQL(string text)
 		{
-			string [] lines = Regex.Split(text, "\r\n");
+			string [] lines = text.Split(new Char [] {'\n'});
 			
 			foreach (string line in lines)
 			{
@@ -259,40 +218,49 @@ namespace hl7service
 					}
 				}
 				
+				// Alta can't be NULL
+				
+				if (sql["Alta"] == "NULL")
+				{
+					DateTime today = DateTime.Today;
+
+					sql["Alta"] = today.ToString("yyyyMMdd");
+				}
+
 				storeSQL();
 			}
 		}
 
 		public void fromTXTtoSQL(string text)
 		{
-			string [] lines = Regex.Split(text, "\r\n");
+			string [] lines = text.Split(new Char [] {'\n'});
 			
 			foreach (string line in lines)
 			{
+				Logger.Debug("Line: " + line);
+				
 				// each field is separated by a tab char
 				string [] split = line.Split(new Char [] {'\t'});
 				
 				// Convert it to SQL
 				sql.Clear();
-
-				if (sqlKeys.Length == split.Length)
-				{
-					for (int i=0; i<split.Length; i++)
-					{
-						sql.Add(sqlKeys[i], split[i]);
-					}
-				}
-				else
-				{
-					Logger.Fatal("Wrong file format (TXT). Remember to separate fields with a TAB character.");
-				}
-			
-				// Alta
 				
-				DateTime today = DateTime.Today;
+				int keyIndex = 0;
 				
-				sql.Add("Alta", today.ToString("yyyyMMdd"));
+				foreach(string s in split)
+				{
+					sql.Add(sqlKeys[keyIndex++], s);
+				}
+				
+				// Alta can't be NULL
+				
+				if (sql["Alta"] == "NULL")
+				{
+					DateTime today = DateTime.Today;
 
+					sql["Alta"] = today.ToString("yyyyMMdd");
+				}
+				
 				storeSQL();
 			}			
 		}
