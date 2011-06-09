@@ -22,13 +22,13 @@ namespace hl7service
 		
 		public SQLServerInfo()
 		{
-			// Set defaults
-			this.user = "sa";
-			this.password = "123456";
-			this.server_url = "192.168.1.3\\SQLEXPRESS";
-			this.trusted_connection = true;
-			this.database = "SCA5t";
-			this.timeout = 30;
+			// Get defaults
+			this.user = inifile.getVal("user", "sa");
+			this.password = inifile.getVal("password", "123456");
+			this.server_url = inifile.getVal("server_url", "192.168.1.3\\SQLEXPRESS");
+			this.trusted_connection = inifile.getVal("trusted_connection", true);
+			this.database = inifile.getVal("database", "SCA5t");
+			this.timeout = inifile.getVal("timeout", 30);
 		}
 	}
 }

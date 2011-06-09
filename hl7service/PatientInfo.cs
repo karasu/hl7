@@ -11,7 +11,7 @@ namespace hl7service
 		public string connectionString;
 		
 		// SQL Patient info
-		public string table = "SCAPersona";
+		public string table = inifile.getVal("Table", "SCAPersona");
 
 		// HL7 v2 Patient info
 		
@@ -187,17 +187,19 @@ namespace hl7service
 			
 			foreach (string line in lines)
 			{
-				// Hem de recòrrer la línia. Les comes separen els camps, però s'ha de vigilar amb les
-				// comes que estan dins de les cometes que marquen un string.
-				
-				sql.Clear();
-				
-				int i = 0;
-				bool insideString = false;
-				string field = string.Empty;
-							
-				foreach(string key in sqlKeys)
+				if (line.Length > 0)
 				{
+					Logger.Debug(line);
+	
+					// Hem de recòrrer la línia. Les comes separen els camps, però s'ha de vigilar amb les
+					// comes que estan dins de les cometes que marquen un string.
+					
+					sql.Clear();
+					
+					int i = 0, k = 0;
+					bool insideString = false;
+					string field = string.Empty;
+								
 					while (i < line.Length)
 					{
 						if (line[i] == '\"')
@@ -206,7 +208,7 @@ namespace hl7service
 						}
 						else if (line[i] == ',' && !insideString)
 						{
-							sql.Add(key, field);
+							sql.Add(sqlKeys[k++], field);
 							field = string.Empty;
 						}
 						else
@@ -216,18 +218,18 @@ namespace hl7service
 
 						i++;
 					}
+					
+					// Alta can't be NULL
+					
+					if (sql["Alta"] == "NULL")
+					{
+						DateTime today = DateTime.Today;
+	
+						sql["Alta"] = today.ToString("yyyyMMdd");
+					}
+	
+					storeSQL();
 				}
-				
-				// Alta can't be NULL
-				
-				if (sql["Alta"] == "NULL")
-				{
-					DateTime today = DateTime.Today;
-
-					sql["Alta"] = today.ToString("yyyyMMdd");
-				}
-
-				storeSQL();
 			}
 		}
 
@@ -237,31 +239,34 @@ namespace hl7service
 			
 			foreach (string line in lines)
 			{
-				Logger.Debug("Line: " + line);
-				
-				// each field is separated by a tab char
-				string [] split = line.Split(new Char [] {'\t'});
-				
-				// Convert it to SQL
-				sql.Clear();
-				
-				int keyIndex = 0;
-				
-				foreach(string s in split)
+				if (line.Length > 0)
 				{
-					sql.Add(sqlKeys[keyIndex++], s);
+					Logger.Debug("Line: " + line);
+					
+					// each field is separated by a tab char
+					string [] split = line.Split(new Char [] {'\t'});
+					
+					// Convert it to SQL
+					sql.Clear();
+					
+					int keyIndex = 0;
+					
+					foreach(string s in split)
+					{
+						sql.Add(sqlKeys[keyIndex++], s);
+					}
+					
+					// Alta can't be NULL
+					
+					if (sql["Alta"] == "NULL")
+					{
+						DateTime today = DateTime.Today;
+	
+						sql["Alta"] = today.ToString("yyyyMMdd");
+					}
+					
+					storeSQL();
 				}
-				
-				// Alta can't be NULL
-				
-				if (sql["Alta"] == "NULL")
-				{
-					DateTime today = DateTime.Today;
-
-					sql["Alta"] = today.ToString("yyyyMMdd");
-				}
-				
-				storeSQL();
 			}			
 		}
 		

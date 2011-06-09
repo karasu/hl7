@@ -16,7 +16,7 @@ namespace hl7service
 {
 	static class Logger 
 	{
-		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log";
+		private static string fullPath = inifile.getVal("logfile", System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log");
 			                
 		public static void Debug (string str)
 		{
@@ -37,7 +37,8 @@ namespace hl7service
 			}
 		}
 	}
-
+	
+	
 	/*		
     class HL7Service:ServiceBase
     {
@@ -75,12 +76,27 @@ namespace hl7service
 
         public static void Main(string[] args)
         {
+			// to create a new ini file ;)
+			inifile.setVal("user", "sa");
+			inifile.setVal("password", "123456");
+			inifile.setVal("server_url", "192.168.1.3\\SQLEXPRESS");
+			inifile.setVal("trusted_connection", true);
+			inifile.setVal("database", "SCA5t");
+			inifile.setVal("timeout", 30);
+			inifile.setVal("folder", "/tmp/hl7");
+			inifile.setVal("port", 8901);
+			inifile.setVal("Table", "SCAPersona");
+			inifile.setVal("logfile", System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log");
+	
+			
+			
             HL7Service hl7 = new HL7Service();
 			
-			string folder = "/tmp/hl7";
+			string folder = inifile.getVal("folder", "/tmp/hl7");
 			
 			hl7.myFile = new FileHandler(folder);			
-			hl7.myTCP = new TCPHandler(8901, folder);
+			
+			hl7.myTCP = new TCPHandler(inifile.getVal("port", 8901), folder);
         }
     }
 }

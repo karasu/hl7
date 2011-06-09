@@ -58,6 +58,7 @@
     <Compile Include="TCPHandler.cs" />
     <Compile Include="PatientInfo.cs" />
     <Compile Include="SQLInfo.cs" />
+    <Compile Include="inifile.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
