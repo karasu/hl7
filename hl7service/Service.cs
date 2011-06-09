@@ -16,7 +16,7 @@ namespace hl7service
 {
 	static class Logger 
 	{
-		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log.txt";
+		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log";
 			                
 		public static void Debug (string str)
 		{
