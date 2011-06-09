@@ -4,3 +4,6 @@ text files and csv files.
 It adds patient info to a SQL Server database.
 
 Also a simple TCP/IP client has been developed to test the service.
+
+karasu <gustaucastells(at)gmail(dot)com>
+
