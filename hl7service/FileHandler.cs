@@ -2,29 +2,33 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace hl7service
 {
 	public class FileHandler
 	{
-        private Thread listenThread;
+        private Thread watchThread;
+		private List <string> files = new List <string>();
 		
 		private string folder;
 		
 		private FileSystemWatcher watcher = null;
+
+		string [] extensions = new string [] {"txt","csv","hl7"};
 		
         public FileHandler(String folder)
         {
 			this.folder = folder;
 			
-			this.listenThread = new Thread(new ThreadStart(WatchForFiles));
-			this.listenThread.Start();
+			this.watchThread = new Thread(new ThreadStart(WatchForFiles));
+			this.watchThread.Start();
         }
 		
 		public void WatchForFiles()
 		{
-			// First process all existing xml files
+			// First process all existing files
 			
 			ProcessPreviousExistingFiles();
 			
@@ -34,8 +38,22 @@ namespace hl7service
 			
             while (true)
             {
-				// Wait for changes on the designated folder
-				System.Threading.Thread.Sleep(1000);
+				// Try to process our file list if necessary
+				
+				if (files.Count > 0)
+				{
+					foreach(string fileName in files)
+					{
+						ProcessFile(fileName);
+					}
+					
+					files.Clear();
+				}
+				else
+				{
+					// Wait for changes on the designated folder
+					System.Threading.Thread.Sleep(500);
+				}
             }
         }
 		
@@ -61,43 +79,48 @@ namespace hl7service
 		{
 			// A new file has been created
 
-			// We don't start a new thread here, just process one file at a time.
-			ProcessFile(e.FullPath);
+			// We don't start a new thread here, just add the new file to the queue.
+
+			if (ExtensionRecognised(e.FullPath))
+			{
+				files.Add(e.FullPath);
+			}
 		}
 		
 		public void ProcessPreviousExistingFiles()
 		{
-			// Process the list of files found in the directory when the service is started.
+			// Add to the queue the list of files found in the directory when the service is started.
 			
         	string [] fileEntries = Directory.GetFiles(this.folder);
 			
 			foreach(string fileName in fileEntries)
 			{
-				ProcessFile(fileName);
+				if (ExtensionRecognised(fileName))
+				{
+					files.Add(fileName);
+				}
 			}
+		}
+		
+		public bool ExtensionRecognised(string fileName)
+		{
+			bool recognised = false;
+			
+			foreach(string ext in extensions)
+			{
+				if (fileName.EndsWith(ext))
+				{
+					recognised = true;
+				}
+			}
+			
+			return recognised;
 		}
 		
         public void ProcessFile(string fileName)
         {
 			bool hl7v2 = false;
 			bool hl7v3 = false;
-			bool recognized = false;
-
-			string [] extensions = new string [] {"txt","csv","hl7"};
-			
-			foreach(string ext in extensions)
-			{
-				if (fileName.EndsWith(ext))
-				{
-					recognized = true;
-				}
-			}
-			
-			if (!recognized)
-			{
-				Logger.Debug("Wrong format. Not a patient file");
-				return;
-			}
 			
 			string message = string.Empty;
 			
@@ -163,8 +186,8 @@ namespace hl7service
 				p.fromTXTtoSQL(message);
 			}
 		
-			// everything ok, we can delete the file
 			// File.Delete(fileName);
+			File.Move(fileName, fileName + ".done");
         }
 	}
 }
