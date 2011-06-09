@@ -210,11 +210,11 @@ namespace hl7service
 
 		public void fromTXTtoSQL(string text)
 		{
-			hl7v2PatientInfo.Clear();
-			
 			// Read patient info
 			
-			string [] split = text.Substring(first).Split(new Char [] {'\t'});
+			foreach (string line in text)
+			{
+			string [] split = text.Split(new Char [] {'\t'});
 			
 			string sqlString = string.Empty;
 			
@@ -229,6 +229,72 @@ namespace hl7service
  1	0	Slock,Willy Eduard   Dhr. 	Willy Eduard   Dhr. 	Slock		4005181503	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	2011-06-06
 
 			 * */
+			
+			// Now convert it to SQL
+			
+			string sqlString = "INSERT INTO SCAPersona (Tipo, Nombre, Nombre1, Apellido1, Apellido2, NHC, Alta) VALUES (";
+			
+			// Tipo
+			sqlString += "2,";
+			
+			// Calculem quins seran els camps Nombre1, Apellido1 i Apellido2
+			
+			string fullName = hl7v2PatientInfo["PatientName"];
+			
+			string [] split = fullName.Split(new Char [] {'^'}); // separem per ^. Primer ve el 1r cognom i després el nom.
+			
+			string apellido1 = split[0];
+			string apellido2 = string.Empty;
+			if (hl7v2PatientInfo.ContainsKey("MothersMaidenName"))
+			{
+				apellido2 = hl7v2PatientInfo["MothersMaidenName"];
+			}
+			string nombre1 = string.Empty;
+			for (int i=1; i<split.Length; i++)
+			{
+				nombre1 += split[i] + " ";
+			}
+			
+			// Nombre = Apellido1 Apellido2, Nombre1
+			sqlString += "'";
+			if (apellido2.Length > 0)
+			{
+				sqlString += apellido1 + " " + apellido2 + "," + nombre1;
+			}
+			else
+			{
+				sqlString += apellido1 + "," + nombre1;
+			}
+			sqlString += "',";			
+			
+			// Nombre1
+			sqlString += "'";
+			sqlString += nombre1;
+			sqlString += "',";
+			
+			// Apellido1
+			sqlString += "'" + apellido1 + "',";
+			
+			// Apellido2
+         	sqlString += "'" + apellido2 + "',";
+			
+			// NHC
+         	sqlString += "'";
+			if (hl7v2PatientInfo.ContainsKey("InternalID"))
+			{
+				sqlString += hl7v2PatientInfo["InternalID"];
+			}
+         	sqlString += "',";
+			
+			// Alta
+			
+			DateTime today = DateTime.Today;
+			
+			sqlString += "'" + today.ToString("yyyyMMdd") + "');";
+			
+			store(sqlString);			
+			
+			
 			
 			// Each TXT can contain more than one patient info
 			
