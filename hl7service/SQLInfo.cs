@@ -10,6 +10,7 @@ namespace hl7service
 		public bool trusted_connection;
 		public string database;
 		public int timeout;
+		public string table;
 				
 		public string getConnectionString()
 		{
@@ -19,16 +20,21 @@ namespace hl7service
 			
 			return connection;
 		}
-		
+			
 		public SQLServerInfo()
 		{
 			// Get defaults
-			this.user = inifile.getVal("user", "sa");
-			this.password = inifile.getVal("password", "123456");
-			this.server_url = inifile.getVal("server_url", "192.168.1.3\\SQLEXPRESS");
-			this.trusted_connection = inifile.getVal("trusted_connection", true);
-			this.database = inifile.getVal("database", "SCA5t");
-			this.timeout = inifile.getVal("timeout", 30);
+			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+
+			
+			this.user = ini.getValue("database", "user", "sa");
+			this.password = ini.getValue("database", "password", "123456");
+			this.server_url = ini.getValue("database", "server_url", "192.168.1.3\\SQLEXPRESS");
+			this.trusted_connection = ini.getValue("database", "trusted_connection", true);
+			this.database = ini.getValue("database", "database", "SCA5t");
+			this.timeout = ini.getValue("database", "timeout", 30);
+			
+			this.table = ini.getValue("Table", "SCAPersona");
 		}
 	}
 }

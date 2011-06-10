@@ -11,7 +11,8 @@ namespace hl7service
 		public string connectionString;
 		
 		// SQL Patient info
-		public string table = inifile.getVal("Table", "SCAPersona");
+		
+		public string table = string.Empty;
 
 		// HL7 v2 Patient info
 		
@@ -44,6 +45,7 @@ namespace hl7service
 			SQLServerInfo sqlInfo = new SQLServerInfo();
 			
 			this.connectionString = sqlInfo.getConnectionString();
+			this.table = sqlInfo.table;
 			
 			hl7v2.Clear();
 		}

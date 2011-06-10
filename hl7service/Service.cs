@@ -16,7 +16,7 @@ namespace hl7service
 {
 	static class Logger 
 	{
-		private static string fullPath = inifile.getVal("logfile", System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log");
+		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log";
 			                
 		public static void Debug (string str)
 		{
@@ -69,34 +69,37 @@ namespace hl7service
     {
         public TCPHandler myTCP = null;
         public FileHandler myFile = null;
+		
+		public string folder;
+		public int port;
 
         public HL7Service()
         {
+			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+			
+			ini.setValue("database","user", "sa");
+			ini.setValue("database","password", "123456");
+			ini.setValue("database","server_url", "192.168.1.3\\SQLEXPRESS");
+			ini.setValue("database","trusted_connection", true);
+			ini.setValue("database","database", "SCA5t");
+			ini.setValue("database","timeout", 30);
+			ini.setValue("database","Table", "SCAPersona");
+
+			ini.setValue("service","folder", "/tmp/hl7");
+			ini.setValue("service","port", 8901);
+			
+			folder = ini.getValue("service", "folder", "/tmp/hl7");
+			port = ini.getValue("service", "port", 8901);
+			
+			myFile = new FileHandler(folder);			
+			
+			myTCP = new TCPHandler(port, folder);
         }
 
         public static void Main(string[] args)
         {
-			// to create a new ini file ;)
-			inifile.setVal("user", "sa");
-			inifile.setVal("password", "123456");
-			inifile.setVal("server_url", "192.168.1.3\\SQLEXPRESS");
-			inifile.setVal("trusted_connection", true);
-			inifile.setVal("database", "SCA5t");
-			inifile.setVal("timeout", 30);
-			inifile.setVal("folder", "/tmp/hl7");
-			inifile.setVal("port", 8901);
-			inifile.setVal("Table", "SCAPersona");
-			inifile.setVal("logfile", System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.log");
-	
-			
-			
             HL7Service hl7 = new HL7Service();
 			
-			string folder = inifile.getVal("folder", "/tmp/hl7");
-			
-			hl7.myFile = new FileHandler(folder);			
-			
-			hl7.myTCP = new TCPHandler(inifile.getVal("port", 8901), folder);
         }
     }
 }
