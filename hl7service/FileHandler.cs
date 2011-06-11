@@ -37,7 +37,7 @@ namespace hl7service
 		{
 			// First process all existing files
 			
-			AddPreviousExistingFiles();
+			EnqueueExistingFiles();
 			
 			// Now watch directory for changes
 			
@@ -83,12 +83,12 @@ namespace hl7service
 
 			if (ExtensionRecognised(e.FullPath))
 			{
-				Logger.Debug("Added " + e.FullPath + " to queue.");
 				files.Enqueue(e.FullPath);
+				Logger.Debug("Added " + e.FullPath + " to queue.");
 			}
 		}
 		
-		public void AddPreviousExistingFiles()
+		public void EnqueueExistingFiles()
 		{
 			// Add to the queue the list of files found in the directory when the service is started.
 			
@@ -98,8 +98,8 @@ namespace hl7service
 			{
 				if (ExtensionRecognised(fileName))
 				{
-					Logger.Debug("Added " + fileName + " to queue.");
 					files.Enqueue(fileName);
+					Logger.Debug("Added " + fileName + " to queue.");
 				}
 			}
 		}
@@ -145,6 +145,8 @@ namespace hl7service
 				Logger.Fatal(e.Message);
 			}				
 			
+			bool SQLstored = false;
+			
 			PatientInfo p = new PatientInfo();
 			
 			if (fileName.EndsWith("hl7"))
@@ -171,27 +173,39 @@ namespace hl7service
 	
 				if (hl7v2)
 				{
-					p.fromHL7v2toSQL(message);
+					SQLstored = p.fromHL7v2toSQL(message);
 
 				}
 				else if (hl7v3)
 				{
-					p.fromHL7v3toSQL(message);
+					SQLstored = p.fromHL7v3toSQL(message);
 				}
 
 			}
 			else if (fileName.EndsWith("csv"))
 			{
 				p.fromCSVtoSQL(message, csv_field_delimiter);
+				SQLstored = true;
 			}
 			else if (fileName.EndsWith("txt"))
 			{
 				p.fromTXTtoSQL(message);
+				SQLstored = true;
 			}
 		
-			Logger.Debug(fileName + " done.");
-			// File.Move(fileName, fileName + ".done");
-			File.Delete(fileName);
+			if (SQLstored)
+			{
+				Logger.Debug(fileName + " done!");
+				// File.Move(fileName, fileName + ".done");
+				File.Delete(fileName);
+			}
+			else
+			{
+				// Something bad happened (wrong data, wrong SQL...)
+				// We put it at the end of the queue to try again later.
+				Logger.Debug("Error with " + fileName + ", putting it at the end of the queue.");
+				files.Enqueue(fileName);
+			}
 		}
 	}
 }

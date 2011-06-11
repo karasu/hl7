@@ -50,7 +50,7 @@ namespace hl7service
 			hl7v2.Clear();
 		}
 		
-		public void fromHL7v2toSQL(string text)
+		public bool fromHL7v2toSQL(string text)
 		{
 			// Parse HL7 v2 Message
 			
@@ -130,10 +130,10 @@ namespace hl7service
 
 			sql.Add("Alta", today.ToString("yyyyMMdd"));
 			
-			storeSQL();
+			return storeSQL();
 		}
 		
-		protected void storeSQL()
+		protected bool storeSQL()
 		{
 			// Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 					
@@ -168,6 +168,8 @@ namespace hl7service
 
 			SqlConnection myConnection = new SqlConnection();		
 			myConnection.ConnectionString = this.connectionString;
+			
+			bool allOk = true;
 
 			try 
 			{
@@ -176,11 +178,15 @@ namespace hl7service
 				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 				
 				myCmd.ExecuteNonQuery();
+				
 			}
 			catch(Exception e)
 			{
+				allOk = false;
 				Logger.Fatal("Can't open connection to database server: " + e.ToString());
 			}
+			
+			return allOk;
 		}
 		
 		public void fromCSVtoSQL(string text, char csv_field_delimiter)
@@ -272,7 +278,7 @@ namespace hl7service
 			}			
 		}
 		
-		public void fromHL7v3toSQL(string xml)
+		public bool fromHL7v3toSQL(string xml)
 		{
 			// TODO		
 			/*
@@ -299,6 +305,8 @@ namespace hl7service
                 }
             }
             */
+			
+			return false;
 		}
 	}
 }
