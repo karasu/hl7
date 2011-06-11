@@ -30,10 +30,18 @@ namespace hl7service
 
 		public static void DebugFormat (string str, params object [] args)
 		{
-			using(StreamWriter writer = File.AppendText(fullPath))
+			try
 			{
+				StreamWriter writer = File.AppendText(fullPath);
 				writer.WriteLine(DateTime.Now.ToLongTimeString() + ": " + str, args);
+				writer.Flush();
+				writer.Close();
+				
 				Console.WriteLine(DateTime.Now.ToLongTimeString() + ": " + str, args);
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine(e.Message);
 			}
 		}
 	}
@@ -72,6 +80,7 @@ namespace hl7service
 		
 		public string folder;
 		public int port;
+		public char csv_field_delimiter;
 
         public HL7Service()
         {
@@ -79,34 +88,38 @@ namespace hl7service
 			
 			folder = ini.getValue("service", "folder", "/tmp/hl7");
 			port = ini.getValue("service", "port", 8901);
+			csv_field_delimiter = ini.getValue("service", "csv", ',');
         }
 
 		public void createDefaultIni()
 		{
 			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
 			
-			ini.setValue("database","user", "sa");
-			ini.setValue("database","password", "123456");
-			ini.setValue("database","server_url", "192.168.1.3\\\\SQLEXPRESS");
-			ini.setValue("database","trusted_connection", true);
-			ini.setValue("database","database", "SCA5t");
-			ini.setValue("database","timeout", 30);
-			ini.setValue("database","table", "SCAPersona");
-			ini.setValue("service","folder", "/tmp/hl7");
-			ini.setValue("service","port", 8901);
+			ini.setValue("database", "user", "sa");
+			ini.setValue("database", "password", "123456");
+			ini.setValue("database", "server_url", "192.168.1.3\\SQLEXPRESS");
+			ini.setValue("database", "trusted_connection", true);
+			ini.setValue("database", "database", "SCA5t");
+			ini.setValue("database", "timeout", 30);
+			ini.setValue("database", "table", "SCAPersona");
+			ini.setValue("service", "folder", "/tmp/hl7");
+			ini.setValue("service", "port", 8901);
+			ini.setValue("service", "csv", ',');
 			
 			ini.Save(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
 		}
 		
 		public void run()
 		{
-			myFile = new FileHandler(folder);			
+			myFile = new FileHandler(folder, csv_field_delimiter);			
 			myTCP = new TCPHandler(port, folder);
 		}
 
         public static void Main(string[] args)
         {
             HL7Service hl7 = new HL7Service();
+			
+			// hl7.createDefaultIni();
 			
 			hl7.run();
         }

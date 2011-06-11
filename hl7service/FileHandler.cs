@@ -10,17 +10,22 @@ namespace hl7service
 	public class FileHandler
 	{
         private Thread watchThread;
-		private List <string> files = new List <string>();
+		private Queue _files = new Queue();
+		private Queue files;
 		
 		private string folder;
+		private char csv_field_delimiter;
 		
 		private FileSystemWatcher watcher = null;
 
 		string [] extensions = new string [] {"txt","csv","hl7"};
 		
-        public FileHandler(String folder)
+        public FileHandler(String folder, char csv_field_delimiter)
         {
 			this.folder = folder;
+			this.csv_field_delimiter = csv_field_delimiter;
+			
+			files = Queue.Synchronized(_files);
 			
 			Logger.Debug("Starting file handler thread. Watching '" + folder + "' folder.");
 			
@@ -32,7 +37,7 @@ namespace hl7service
 		{
 			// First process all existing files
 			
-			ProcessPreviousExistingFiles();
+			AddPreviousExistingFiles();
 			
 			// Now watch directory for changes
 			
@@ -40,16 +45,11 @@ namespace hl7service
 			
             while (true)
             {
-				// Try to process our file list if necessary
+				// Try to process one file of our queue
 				
 				if (files.Count > 0)
 				{
-					foreach(string fileName in files)
-					{
-						ProcessFile(fileName);
-					}
-					
-					files.Clear();
+					ProcessFile(files.Dequeue().ToString());
 				}
 				else
 				{
@@ -79,17 +79,16 @@ namespace hl7service
 		
 		public void watcher_FileCreated(object sender, FileSystemEventArgs e)
 		{
-			// A new file has been created
-
-			// We don't start a new thread here, just add the new file to the queue.
+			// A new file has been created, we just add it to the queue.
 
 			if (ExtensionRecognised(e.FullPath))
 			{
-				files.Add(e.FullPath);
+				Logger.Debug("Added " + e.FullPath + " to queue.");
+				files.Enqueue(e.FullPath);
 			}
 		}
 		
-		public void ProcessPreviousExistingFiles()
+		public void AddPreviousExistingFiles()
 		{
 			// Add to the queue the list of files found in the directory when the service is started.
 			
@@ -99,7 +98,8 @@ namespace hl7service
 			{
 				if (ExtensionRecognised(fileName))
 				{
-					files.Add(fileName);
+					Logger.Debug("Added " + fileName + " to queue.");
+					files.Enqueue(fileName);
 				}
 			}
 		}
@@ -139,7 +139,6 @@ namespace hl7service
 				}
 				
 				infile.Close();
-				
 			}	
 			catch(Exception e)
 			{
@@ -183,16 +182,17 @@ namespace hl7service
 			}
 			else if (fileName.EndsWith("csv"))
 			{
-				p.fromCSVtoSQL(message);
+				p.fromCSVtoSQL(message, csv_field_delimiter);
 			}
 			else if (fileName.EndsWith("txt"))
 			{
 				p.fromTXTtoSQL(message);
 			}
 		
-			// File.Delete(fileName);
+			Logger.Debug(fileName + " done.");
 			// File.Move(fileName, fileName + ".done");
-        }
+			File.Delete(fileName);
+		}
 	}
 }
 

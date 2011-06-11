@@ -135,7 +135,7 @@ namespace hl7service
 		
 		protected void storeSQL()
 		{
-			Logger.Debug("PatientInfo connection string: " + this.connectionString);	
+			// Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 					
 			// Create SQL String
 			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta			toSQL();
@@ -164,7 +164,7 @@ namespace hl7service
 
 			sqlString += "'" + sql["Alta"] + "');";
 			
-			Logger.Debug("PatientInfo SQL Command: " + sqlString);			
+			// Logger.Debug("PatientInfo SQL Command: " + sqlString);			
 
 			SqlConnection myConnection = new SqlConnection();		
 			myConnection.ConnectionString = this.connectionString;
@@ -183,7 +183,7 @@ namespace hl7service
 			}
 		}
 		
-		public void fromCSVtoSQL(string text)
+		public void fromCSVtoSQL(string text, char csv_field_delimiter)
 		{
 			string [] lines = text.Split(new Char [] {'\n'});
 			
@@ -191,10 +191,10 @@ namespace hl7service
 			{
 				if (line.Length > 0)
 				{
-					Logger.Debug(line);
+					// Logger.Debug(line);
 	
-					// Hem de recòrrer la línia. Les comes separen els camps, però s'ha de vigilar amb les
-					// comes que estan dins de les cometes que marquen un string.
+					// Hem de recòrrer la línia. El caràcter csv_field_delimiter separa els camps
+					// però s'ha de vigilar perquè aquest mateix caràcter pot estar dins d'un string.
 					
 					sql.Clear();
 					
@@ -208,7 +208,7 @@ namespace hl7service
 						{
 							insideString = !insideString;
 						}
-						else if (line[i] == ',' && !insideString)
+						else if (line[i] == csv_field_delimiter && !insideString)
 						{
 							sql.Add(sqlKeys[k++], field);
 							field = string.Empty;
@@ -243,7 +243,7 @@ namespace hl7service
 			{
 				if (line.Length > 0)
 				{
-					Logger.Debug("Line: " + line);
+					// Logger.Debug("Line: " + line);
 					
 					// each field is separated by a tab char
 					string [] split = line.Split(new Char [] {'\t'});
