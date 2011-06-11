@@ -22,6 +22,8 @@ namespace hl7service
         {
 			this.folder = folder;
 			
+			Logger.Debug("Starting file handler thread. Watching '" + folder + "' folder.");
+			
 			this.watchThread = new Thread(new ThreadStart(WatchForFiles));
 			this.watchThread.Start();
         }

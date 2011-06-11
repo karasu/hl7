@@ -53,31 +53,13 @@ namespace hl7service
             }
         }
 
-        public inifile(Stream stream)
-            : this(stream, Encoding.UTF8)
-        {
-        }
-
-        public inifile(Stream stream, Encoding encoding)
-        {
-            if (stream == null || stream == Stream.Null)
-			{
-                throw new ArgumentNullException("stream");
-			}
-            
-			if (encoding == null)
-			{
-                throw new ArgumentNullException("encoding");
-			}
-
-            readIniData(stream, encoding);
-        }
-
         private void readIniData(Stream stream, Encoding encoding)
         {
             string lastSection = string.Empty;
-            data.Add(lastSection, new NameValueCollection());
-            if (stream != null && encoding != null)
+            
+			data.Add(lastSection, new NameValueCollection());
+            
+			if (stream != null && encoding != null)
             {
                 string iniData;
                 using 
@@ -89,12 +71,7 @@ namespace hl7service
 
                 iniData = regRemoveEmptyLines.Replace(iniData, "\n");
                 
-                string[] lines = 
-                    iniData.Split
-                    (
-                        new char[] { '\n' }, 
-                        StringSplitOptions.RemoveEmptyEntries
-                    );
+                string [] lines = iniData.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string s in lines)
                 {
@@ -103,20 +80,14 @@ namespace hl7service
                     {
                         if (m.Groups["IsSection"].Length > 0)
                         {
-                            string sName = 
-                                m.Groups["SectionName"].Value.
-                                ToLowerInvariant();
+                            string sName = m.Groups["SectionName"].Value.ToLowerInvariant();
 
                             if (lastSection != sName)
                             {
                                 lastSection = sName;
                                 if (!data.ContainsKey(sName))
                                 {
-                                    data.Add
-                                    (
-                                        sName, 
-                                        new NameValueCollection()
-                                    );
+                                    data.Add(sName, new NameValueCollection());
                                 }
                             }
                         }
@@ -159,15 +130,21 @@ namespace hl7service
             get
             {
                 if (t == null || t == Type.Missing)
+				{
                     return this[section][key];
+				}
                 return getValue(section, key, null, t);
             }
             set
             {
                 if (t == null || t == Type.Missing)
+				{
                     this[section][key] = String.Empty;
+				}
                 else
+				{
                     setValue(section, key, value);
+				}
             }
         }
 
@@ -188,7 +165,7 @@ namespace hl7service
 
         public string[] SectionValues(string section)
         {
-            return this[section].getValues(0);
+			return this[section].GetValues(0);
         }
 
         public object getValue(string section, string key, object defaultValue, Type t)
@@ -471,33 +448,43 @@ namespace hl7service
         public void Save(Stream stream, Encoding encoding)
         {
             if (stream == null || stream == Stream.Null)
+			{
                 throw new ArgumentNullException("stream");
-            if (encoding == null)
+			}
+            
+			if (encoding == null)
+			{
                 throw new ArgumentNullException("encoding");
+			}
+			
             using (StreamWriter sw = new StreamWriter(stream, encoding))
             {
-                Dictionary<string, NameValueCollection>.Enumerator en =
-                    data.GetEnumerator();
+                Dictionary<string, NameValueCollection>.Enumerator en = data.GetEnumerator();
                 while (en.MoveNext())
                 {
-                    KeyValuePair<string, NameValueCollection> cur =
-                        en.Current;
-                    if (!string.IsNullOrEmpty(cur.Key))
+                    KeyValuePair<string, NameValueCollection> cur = en.Current;
+                    
+					if (!string.IsNullOrEmpty(cur.Key))
                     {
                         sw.WriteLine("[{0}]", cur.Key);
                     }
-                    NameValueCollection col = cur.Value;
-                    foreach (string key in col.Keys)
+                    
+					NameValueCollection col = cur.Value;
+                    
+					foreach (string key in col.Keys)
                     {
                         if (!string.IsNullOrEmpty(key))
                         {
                             string value = col[key];
                             if (!string.IsNullOrEmpty(value))
+							{
                                 sw.WriteLine("{0}={1}", key, value);
+							}
                         }
                     }
                 }
-                sw.Flush();
+                
+				sw.Flush();
             }
         }
 

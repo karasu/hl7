@@ -25,7 +25,6 @@ namespace hl7service
 		{
 			// Get defaults
 			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
-
 			
 			this.user = ini.getValue("database", "user", "sa");
 			this.password = ini.getValue("database", "password", "123456");
@@ -33,8 +32,7 @@ namespace hl7service
 			this.trusted_connection = ini.getValue("database", "trusted_connection", true);
 			this.database = ini.getValue("database", "database", "SCA5t");
 			this.timeout = ini.getValue("database", "timeout", 30);
-			
-			this.table = ini.getValue("Table", "SCAPersona");
+			this.table = ini.getValue("database", "table", "SCAPersona");
 		}
 	}
 }

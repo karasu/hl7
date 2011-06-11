@@ -77,29 +77,38 @@ namespace hl7service
         {
 			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
 			
+			folder = ini.getValue("service", "folder", "/tmp/hl7");
+			port = ini.getValue("service", "port", 8901);
+        }
+
+		public void createDefaultIni()
+		{
+			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+			
 			ini.setValue("database","user", "sa");
 			ini.setValue("database","password", "123456");
-			ini.setValue("database","server_url", "192.168.1.3\\SQLEXPRESS");
+			ini.setValue("database","server_url", "192.168.1.3\\\\SQLEXPRESS");
 			ini.setValue("database","trusted_connection", true);
 			ini.setValue("database","database", "SCA5t");
 			ini.setValue("database","timeout", 30);
-			ini.setValue("database","Table", "SCAPersona");
-
+			ini.setValue("database","table", "SCAPersona");
 			ini.setValue("service","folder", "/tmp/hl7");
 			ini.setValue("service","port", 8901);
 			
-			folder = ini.getValue("service", "folder", "/tmp/hl7");
-			port = ini.getValue("service", "port", 8901);
-			
+			ini.Save(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+		}
+		
+		public void run()
+		{
 			myFile = new FileHandler(folder);			
-			
 			myTCP = new TCPHandler(port, folder);
-        }
+		}
 
         public static void Main(string[] args)
         {
             HL7Service hl7 = new HL7Service();
 			
+			hl7.run();
         }
     }
 }

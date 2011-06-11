@@ -25,6 +25,9 @@ namespace hl7service
         {
 			this.folder = folder;
 			
+			Logger.Debug("Starting TCP listener server at port " + port.ToString());
+			Logger.Debug("TCP server will save messages in '" + folder + "' folder.");
+			
             this.tcpListener = new TcpListener(IPAddress.Any, port);
             
 			this.listenThread = new Thread(new ThreadStart(ListenForClients));
