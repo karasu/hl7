@@ -44,7 +44,7 @@ namespace hl7service
 		{
 			SQLServerInfo sqlInfo = new SQLServerInfo();
 			
-			this.connectionString = sqlInfo.getConnectionString();
+			this.connectionString = sqlInfo.connectionString;
 			this.table = sqlInfo.table;
 			
 			hl7v2.Clear();

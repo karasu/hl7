@@ -109,10 +109,26 @@ namespace hl7service
 			ini.Save(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
 		}
 		
+		public bool checkSQLConnection()
+		{
+			/*
+			SQLServerInfo sqlInfo = new SQLServerInfo();
+			return sqlInfo.checkConnection();
+			*/
+			return true;
+		}
+		
 		public void run()
 		{
-			myFile = new FileHandler(folder, csv_field_delimiter);			
-			myTCP = new TCPHandler(port, folder);
+			if (checkSQLConnection())
+			{
+				myFile = new FileHandler(folder, csv_field_delimiter);			
+				myTCP = new TCPHandler(port, folder);
+			}
+			else
+			{
+				Logger.Fatal("Can't connect to the SQL Database server");
+			}
 		}
 
         public static void Main(string[] args)
