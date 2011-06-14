@@ -14,6 +14,7 @@ namespace hl7service
 		private static char CARRIAGE_RETURN = (char)13;
 		private static char FIELD_DELIMITER = '|';
 		private static int MESSAGE_CONTROL_ID_LOCATION = 9;
+		protected string PATIENT_ID = "PID";
 		
     	private Thread listenThread;
 
@@ -62,9 +63,7 @@ namespace hl7service
 		}
 		
 		private void HandleClientComm(object client)
-		{
-			bool hl7v3 = false;
-			
+		{		
 			TcpClient tcpClient = (TcpClient)client;
 			NetworkStream clientStream = tcpClient.GetStream();
 			
@@ -73,7 +72,12 @@ namespace hl7service
 						                 
 			while (true)
 			{
+				bool writeToDisk = false;
+				bool hl7v2 = false;
+				bool hl7v3 = false;
+
 				bytesRead = 0;
+				
 				
 				try
 				{
@@ -100,60 +104,78 @@ namespace hl7service
 
 				if (message[0] != START_OF_BLOCK)
 				{
-					Logger.Debug("Not HL7 v2 version, assuming v3");
+					// TODO: check if it's a v3 HL7 message
 					fileName += ".v3.hl7";
 					hl7v3 = true;
+					writeToDisk = true;
 				}
 				else
 				{
 					Logger.Debug("HL7 v2 message received.");
 					fileName += ".v2.hl7";
-					hl7v3 = false;
+					hl7v2 = true;
+					
+					// Check if it's a message that interests us
+					
+					// search for PID field
+					int first = encoder.GetString(message, 0, bytesRead).IndexOf(PATIENT_ID);
+			
+					if (first != -1)
+					{
+						// Ok, the message has a patient id
+						writeToDisk	= true;
+					}
 				}
 								
 				// Write message to disk
-				try
+				if (writeToDisk)
 				{
-					StreamWriter outfile = new StreamWriter(fileName);
-					outfile.Write(encoder.GetString(message, 0, bytesRead));
-					outfile.Close();
-				}
-				catch (Exception e)
-    			{
-					Logger.Fatal("Can't write message to disk: " + e.Message);
-    			}
-				
-				if (hl7v3 == false)
-				{
-					// send an v2 ack
-					
-					string messageControlId = getMessageControlId(encoder.GetString(message, 0, bytesRead));
-					
-					string ackMsg = string.Empty;
-					
-					ackMsg += START_OF_BLOCK;
-					ackMsg += "MSH|^~\\&|||||||ACK||P|2.2";
-					ackMsg += CARRIAGE_RETURN;
-					ackMsg += "MSA|AA|" + messageControlId;
-					ackMsg += CARRIAGE_RETURN;
-					ackMsg += END_OF_BLOCK;
-					ackMsg += CARRIAGE_RETURN;
-					
-					Console.WriteLine("TCPHandler: Sending ack msg...");
-								
-					// Translate the passed message into ASCII and store it as a Byte array.
-					Byte[] data = System.Text.Encoding.ASCII.GetBytes(ackMsg);
-					
 					try
 					{
-						clientStream.Write(data, 0, data.Length);
+						StreamWriter outfile = new StreamWriter(fileName);
+						outfile.Write(encoder.GetString(message, 0, bytesRead));
+						outfile.Close();
 					}
 					catch (Exception e)
-        			{
-						Logger.Fatal("Can't send ack message: " + e.Message);
-        			}
+	    			{
+						Logger.Fatal("Can't write message to disk: " + e.Message);
+	    			}
+					
+					if (hl7v2)
+					{
+						// send a v2 ack
+						
+						string messageControlId = getMessageControlId(encoder.GetString(message, 0, bytesRead));
+						
+						string ackMsg = string.Empty;
+						
+						ackMsg += START_OF_BLOCK;
+						ackMsg += "MSH|^~\\&|||||||ACK||P|2.2";
+						ackMsg += CARRIAGE_RETURN;
+						ackMsg += "MSA|AA|" + messageControlId;
+						ackMsg += CARRIAGE_RETURN;
+						ackMsg += END_OF_BLOCK;
+						ackMsg += CARRIAGE_RETURN;
+						
+						Console.WriteLine("TCPHandler: Sending ack msg...");
+									
+						// Translate the passed message into ASCII and store it as a Byte array.
+						Byte[] data = System.Text.Encoding.ASCII.GetBytes(ackMsg);
+						
+						try
+						{
+							clientStream.Write(data, 0, data.Length);
+						}
+						catch (Exception e)
+	        			{
+							Logger.Fatal("Can't send ack message: " + e.Message);
+	        			}
+					}
+					else if (hl7v3)
+					{
+						// Send a v3 ack
+					}
 				}
-				
 			}
 			
 			tcpClient.Close();
