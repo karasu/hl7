@@ -36,10 +36,10 @@ namespace hl7service
 			"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
 			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
 			"Field9","Field10","Alta" };
+		
 		protected string [] field_keys = new string [] {
 			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8","Field9","Field10" };
-	
-			
+				
 		public PatientInfo()
 		{
 			SQLServerInfo sqlInfo = new SQLServerInfo();
@@ -140,31 +140,38 @@ namespace hl7service
 			// Create SQL String
 			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta			toSQL();
 			
-			string sqlString = "INSERT INTO SCAPersona (Tipo, Referencia, Nombre, Nombre1, Apellido1, Apellido2, NHC, ";
+			string sqlString = "INSERT INTO SCAPersona (";
 
-			foreach (string key in field_keys)
+			foreach (string key in sqlKeys)
 			{
 				sqlString += key + ", ";
 			}
 
-			sqlString += "Alta) VALUES (";
-			
-			sqlString += sql["Tipo"] + ",";
-			sqlString += sql["Referencia"] + ",";
-			sqlString += "'" + sql["Nombre"] + "',";
-			sqlString += "'" + sql["Nombre1"] + "',";
-			sqlString += "'" + sql["Apellido1"] + "',";
-			sqlString += "'" + sql["Apellido2"] + "',";
-         	sqlString += "'" + sql["NHC"] + "',";
+			sqlString += ") VALUES (";
 
-			foreach (string key in field_keys)
+			if (sql["ALTA"] == "NULL") // Alta can't be NULL
 			{
-				sqlString += "'" + sql[key] + "',";
+				sql["ALTA"] = DateTime.Today.ToString("yyyyMMdd");
+			}
+			
+			foreach (string key in sqlKeys)
+			{
+				if (sql[key] == "NULL")
+				{
+					sqlString += "NULL,";
+				}
+				else
+				{
+					sqlString += "'" + sql[key] + "',";
+				}
 			}
 
-			sqlString += "'" + sql["Alta"] + "');";
+			// treu la coma final que s'ha afegit de més.
+			sqlString = sqlString.TrimEnd(new Char [] {','});
 			
-			// Logger.Debug("PatientInfo SQL Command: " + sqlString);			
+			sqlString += ");";
+			
+			Logger.Debug("SQL Command: " + sqlString);			
 
 			SqlConnection myConnection = new SqlConnection();		
 			myConnection.ConnectionString = this.connectionString;
@@ -178,7 +185,6 @@ namespace hl7service
 				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 				
 				myCmd.ExecuteNonQuery();
-				
 			}
 			catch(Exception e)
 			{
@@ -226,15 +232,6 @@ namespace hl7service
 
 						i++;
 					}
-					
-					// Alta can't be NULL
-					
-					if (sql["Alta"] == "NULL")
-					{
-						DateTime today = DateTime.Today;
-	
-						sql["Alta"] = today.ToString("yyyyMMdd");
-					}
 	
 					storeSQL();
 				}
@@ -262,17 +259,8 @@ namespace hl7service
 					foreach(string s in split)
 					{
 						sql.Add(sqlKeys[keyIndex++], s);
-					}
-					
-					// Alta can't be NULL
-					
-					if (sql["Alta"] == "NULL")
-					{
-						DateTime today = DateTime.Today;
-	
-						sql["Alta"] = today.ToString("yyyyMMdd");
-					}
-					
+					}		
+				
 					storeSQL();
 				}
 			}			
