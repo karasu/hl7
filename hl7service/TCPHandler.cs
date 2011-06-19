@@ -78,7 +78,6 @@ namespace hl7service
 
 				bytesRead = 0;
 				
-				
 				try
 				{
 					bytesRead = clientStream.Read(message, 0, 4096);
@@ -104,10 +103,34 @@ namespace hl7service
 
 				if (message[0] != START_OF_BLOCK)
 				{
-					// TODO: check if it's a v3 HL7 message
-					fileName += ".v3.hl7";
-					hl7v3 = true;
-					writeToDisk = true;
+					XmlTextReader reader = new XmlTextReader(new System.IO.StringReader(encoder.GetString(message, 0, bytesRead)));
+
+		            while (reader.Read())
+		            {
+		                switch (reader.NodeType)
+		                {
+		                    case XmlNodeType.Element:
+	                        while (reader.MoveToNextAttribute())
+							{
+								if (reader.Name == "xmlns" && reader.Value == "urn:hl7-org:v3")
+								{
+									hl7v3 = true;
+								}
+								if (reader.Name == "classCode" && reader.Value == "PAT")
+								{
+									writeToDisk = true;
+								}
+							}
+							break;
+		                }
+		            }
+
+					if (hl7v3)
+					{
+						fileName += ".v3.hl7";
+						hl7v3 = true;
+						writeToDisk = true;
+					}
 				}
 				else
 				{
@@ -173,7 +196,7 @@ namespace hl7service
 					}
 					else if (hl7v3)
 					{
-						// Send a v3 ack
+						// Send a v3 ack ¿?
 					}
 				}
 			}

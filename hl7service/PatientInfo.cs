@@ -30,6 +30,8 @@ namespace hl7service
 			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
 			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
 		
+		protected StringDictionary hl7v3 = new StringDictionary();
+		
 		protected StringDictionary sql = new StringDictionary();
 					
 		protected string [] sqlKeys = new string [] {
@@ -268,33 +270,81 @@ namespace hl7service
 		
 		public bool fromHL7v3toSQL(string xml)
 		{
-			// TODO		
-			/*
-			XmlTextReader reader = new XmlTextReader(fileName);
-
+			XmlTextReader reader = new XmlTextReader(new System.IO.StringReader(xml));
+			
             while (reader.Read())
             {
                 switch (reader.NodeType)
                 {
                     case XmlNodeType.Element:
-                        Console.Write("<" + reader.Name);
-                        while (reader.MoveToNextAttribute())
+					if (reader.Name == "patientPerson")
+					{
+						while (reader.MoveToNextAttribute())
+						{
                             Console.Write(" " + reader.Name + "='" + reader.Value + "'");
-                            Console.WriteLine(">");
-                        break;
+						}
+					}
+				}
+			}
+			
+			
+			/*
+<patient classCode="PAT">
+             <id root="1.56.3.4.7.9" extension="55321" assigningAuthorityName="Maple Hospital Patients"/>
+             <patientPerson classCode="PSN" determinerCode="INSTANCE">
+               <name>
+                 <given>Rob</given>
+                 <given>P</given>
+                 <family>Young</family>
+               </name>
+               <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1"/>
+               <birthTime value="19800309"/>
+             </patientPerson>
+           </patient>              
+           
 
-                    case XmlNodeType.Text:
-                        Console.WriteLine (reader.Value);
-                        break;
-                    case XmlNodeType.EndElement: //Mostrar el final del elemento.
-                        Console.Write("</" + reader.Name);
-                        Console.WriteLine(">");
-                        break;
-                }
-            }
-            */
+           		"PatientID","ExternalID","InternalID","AlternatePatientID","PatientName","MothersMaidenName",
+			"DateTimeofBirth","Sex","PatientAlias","Race","PatientAddress","CountyCode","PhoneNumberHome",
+			"PhoneNumberBusiness","PrimaryLanguage","MaritalStatus","Religion","PatientAccountNumber",
+			"SSNNumber","DriversLicenseNumber","MothersIdentifier","EthnicGroup","BirthPlace",
+			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
+			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
+                      
+                                            
+<patientPerson classCode="PSN" determinerCode="INSTANCE">
+      <id root="OMRF" displayable="OMRF1" xsi:type="II"/>
+      <administrativeGenderCode displayName="Female" xsi:type="CE"/>
+      <birthTime value="1962" xsi:type="TS"/>
+      <deceasedInd value="1" xsi:type="BL"/>
+      <deceasedTime value="2007" xsi:type="TS"/>
+      <maritalStatusCode displayName="Maried" xsi:type="CE"/>
+      <educationLevelCode displayName="High School" xsi:type="CE"/>
+      <disabilityCode displayName="Deaf" xsi:type="CE"/>
+      <disabilityCode displayName="Mute" xsi:type="CE"/>
+      <religiousAffiliationCode displayName="Atheist" xsi:type="CE"/>
+      <raceCode displayName="Caucasian" xsi:type="CE"/>
+      <ethnicGroupCode displayName="Hispanic - Latino" xsi:type="CE"/>
+   </patientPerson>           
+           
+           */
 			
 			return false;
+		}
+		
+		public bool fromSQLtoHL7v3()
+		{
+		/*
+<patientPerson>
+    <id root="2.16.578.1.34.1000.1" extension=“$PAT_ID"/>
+    <name use="L">
+	<given> $PAT_FIRSTNAME</given>
+	<given> $PAT_MIDDLE</given>
+	<family> $PAT_FAMILY</family>
+    </name>
+    <administrativeGenderCode code=“$PAT_GENDER" 
+	codeSystem="2.16.840.1.113883.5.1"/>
+    <birthTime value=“$PAT_BIRTHDATE"/>
+</patientPerson>		*/
 		}
 	}
 }
