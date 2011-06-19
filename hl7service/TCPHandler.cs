@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using System.IO;
+using System.Xml;
 
 namespace hl7service
 {
@@ -107,21 +108,20 @@ namespace hl7service
 
 		            while (reader.Read())
 		            {
-		                switch (reader.NodeType)
-		                {
-		                    case XmlNodeType.Element:
-	                        while (reader.MoveToNextAttribute())
+						if (reader.NodeType == XmlNodeType.Element)
+						{
+							do
 							{
 								if (reader.Name == "xmlns" && reader.Value == "urn:hl7-org:v3")
 								{
 									hl7v3 = true;
 								}
-								if (reader.Name == "classCode" && reader.Value == "PAT")
+								else if (reader.Name == "classCode" && (reader.Value == "PAT" || reader.Value == "PSN"))
 								{
 									writeToDisk = true;
 								}
 							}
-							break;
+	                        while (reader.MoveToNextAttribute());
 		                }
 		            }
 

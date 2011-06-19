@@ -29,6 +29,8 @@ namespace hl7service
 			this.table = ini.getValue("database", "table", "SCAPersona");
 
 			connectionString = "Data Source=" + server_url + ";Initial Catalog=" + database + ";User Id=" + user + ";Password=" + password;
+			
+			Logger.Debug("Connection string: " + connectionString);
 		}
 		
 		public bool checkConnection()

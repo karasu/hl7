@@ -88,7 +88,7 @@ namespace hl7service
 			
 			folder = ini.getValue("service", "folder", "/tmp/hl7");
 			port = ini.getValue("service", "port", 8901);
-			csv_field_delimiter = ini.getValue("service", "csv", ',');
+			csv_field_delimiter = ini.getValue("service", "csv", ",")[0];
         }
 
 		public void createDefaultIni()
@@ -104,7 +104,7 @@ namespace hl7service
 			ini.setValue("database", "table", "SCAPersona");
 			ini.setValue("service", "folder", "/tmp/hl7");
 			ini.setValue("service", "port", 8901);
-			ini.setValue("service", "csv", ',');
+			ini.setValue("service", "csv", ",");
 			
 			ini.Save(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
 		}

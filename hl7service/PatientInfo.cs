@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using System.Collections;
 using System.Collections.Specialized;
 
+using System.Xml;
+
 namespace hl7service
 {
 	public class PatientInfo
@@ -31,6 +33,12 @@ namespace hl7service
 			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
 		
 		protected StringDictionary hl7v3 = new StringDictionary();
+		
+		protected string [] hl7v3Keys = new string [] {
+			"classCode", "determinerCode", "id", "given", "family", "administrativeGenderCode", "birthTime",
+			"deceasedInd", "deceasedTime", "multipleBirthInd", "multipleBirthOrderNumber", "organDonorInd",
+			"maritalStatusCode", "educationLevelCode", "disabilityCode", "livingArrangementCode",
+			"religiousAffiliationCode",	"raceCode", "ethnicGroupCode"};
 		
 		protected StringDictionary sql = new StringDictionary();
 					
@@ -272,79 +280,96 @@ namespace hl7service
 		{
 			XmlTextReader reader = new XmlTextReader(new System.IO.StringReader(xml));
 			
+			hl7v3.Clear();
+			
+			foreach (string key in hl7v3Keys)
+			{
+				hl7v3.Add(key, "NULL");				
+			}
+			
             while (reader.Read())
             {
-                switch (reader.NodeType)
-                {
-                    case XmlNodeType.Element:
-					if (reader.Name == "patientPerson")
+				if (reader.NodeType == XmlNodeType.Element)
+				{
+					if (hl7v3.ContainsKey(reader.Name))
 					{
-						while (reader.MoveToNextAttribute())
+						if (reader.HasValue)
 						{
-                            Console.Write(" " + reader.Name + "='" + reader.Value + "'");
+							hl7v3[reader.Name] = reader.Value;
+						}
+						else
+						{
+							hl7v3[reader.Name] = reader.GetAttribute("value");
 						}
 					}
 				}
 			}
 			
-			
-			/*
-<patient classCode="PAT">
-             <id root="1.56.3.4.7.9" extension="55321" assigningAuthorityName="Maple Hospital Patients"/>
-             <patientPerson classCode="PSN" determinerCode="INSTANCE">
-               <name>
-                 <given>Rob</given>
-                 <given>P</given>
-                 <family>Young</family>
-               </name>
-               <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1"/>
-               <birthTime value="19800309"/>
-             </patientPerson>
-           </patient>              
-           
-
-           		"PatientID","ExternalID","InternalID","AlternatePatientID","PatientName","MothersMaidenName",
-			"DateTimeofBirth","Sex","PatientAlias","Race","PatientAddress","CountyCode","PhoneNumberHome",
-			"PhoneNumberBusiness","PrimaryLanguage","MaritalStatus","Religion","PatientAccountNumber",
-			"SSNNumber","DriversLicenseNumber","MothersIdentifier","EthnicGroup","BirthPlace",
-			"MultipleBirthIndicator","BirthOrder","Citizenship","VeteransMilitaryStatus",
-			"Nationality","PatientDeathDateTime","PatientDeathIndicator" };
-                      
-                                            
-<patientPerson classCode="PSN" determinerCode="INSTANCE">
-      <id root="OMRF" displayable="OMRF1" xsi:type="II"/>
-      <administrativeGenderCode displayName="Female" xsi:type="CE"/>
-      <birthTime value="1962" xsi:type="TS"/>
-      <deceasedInd value="1" xsi:type="BL"/>
-      <deceasedTime value="2007" xsi:type="TS"/>
-      <maritalStatusCode displayName="Maried" xsi:type="CE"/>
-      <educationLevelCode displayName="High School" xsi:type="CE"/>
-      <disabilityCode displayName="Deaf" xsi:type="CE"/>
-      <disabilityCode displayName="Mute" xsi:type="CE"/>
-      <religiousAffiliationCode displayName="Atheist" xsi:type="CE"/>
-      <raceCode displayName="Caucasian" xsi:type="CE"/>
-      <ethnicGroupCode displayName="Hispanic - Latino" xsi:type="CE"/>
-   </patientPerson>           
-           
-           */
-			
-			return false;
-		}
+			// Get SQL Info from HL7v3
 		
-		public bool fromSQLtoHL7v3()
-		{
-		/*
-<patientPerson>
-    <id root="2.16.578.1.34.1000.1" extension=“$PAT_ID"/>
-    <name use="L">
-	<given> $PAT_FIRSTNAME</given>
-	<given> $PAT_MIDDLE</given>
-	<family> $PAT_FAMILY</family>
-    </name>
-    <administrativeGenderCode code=“$PAT_GENDER" 
-	codeSystem="2.16.840.1.113883.5.1"/>
-    <birthTime value=“$PAT_BIRTHDATE"/>
-</patientPerson>		*/
+			/*
+			// Now convert it to SQL
+			sql.Clear();
+			
+			sql.Add("Tipo","2");
+			
+			sql.Add("Referencia", "NULL");
+
+			// Calculem quins seran els camps Nombre1, Apellido1 i Apellido2
+			
+			string fullName = hl7v2["PatientName"];
+			
+			// separem per ^. Primer ve el 1r cognom i després el nom.
+			string [] split = fullName.Split(new Char [] {'^'});
+			
+			sql.Add("Apellido1", split[0]);
+			sql.Add("Apellido2", "NULL");
+			
+			if (hl7v2.ContainsKey("MothersMaidenName"))
+			{
+				sql["Apellido2"] = hl7v2["MothersMaidenName"];
+			}
+
+			// La i comença a 1 expressament en el for perquè el primer "split" és el 1r cognom
+			sql.Add("Nombre1", string.Empty);
+			for (int i=1; i<split.Length; i++)
+			{
+				sql["Nombre1"] += split[i] + " ";
+			}
+			
+			// Nombre = Apellido1 Apellido2, Nombre1		
+			if (sql["Apellido2"] != "NULL")
+			{
+				sql.Add("Nombre", sql["Apellido1"] + " " + sql["Apellido2"] + "," + sql["Nombre1"]);
+			}
+			else
+			{
+				sql.Add("Nombre", sql["Apellido1"] + "," + sql["Nombre1"]);
+			}
+			
+			// NHC
+			sql.Add("NHC", "NULL");
+			if (hl7v2.ContainsKey("InternalID"))
+			{
+				sql["NHC"] = hl7v2["InternalID"];
+			}
+			
+			// Field fields (not used)
+			
+			foreach (string key in field_keys)
+			{
+				sql.Add(key, "NULL");
+			}
+			
+			// Alta
+			
+			DateTime today = DateTime.Today;
+
+			sql.Add("Alta", today.ToString("yyyyMMdd"));
+			
+			return storeSQL();
+			 */
+			return false;
 		}
 	}
 }
