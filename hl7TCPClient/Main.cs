@@ -123,7 +123,7 @@ namespace hl7TCPClient
 					
 					iMessage++;
 					
-					if (iMessage > messages.Length) iMessage = 0;
+					if (iMessage >= messages.Length) iMessage = 0;
 					
 				} 
 				catch (ArgumentNullException e) 

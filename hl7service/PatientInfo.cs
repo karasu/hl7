@@ -199,6 +199,7 @@ namespace hl7service
 			catch(Exception e)
 			{
 				allOk = false;
+				Logger.Debug(sqlString);
 				Logger.Fatal("Can't open connection to database server: " + e.ToString());
 			}
 			
