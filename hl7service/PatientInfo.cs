@@ -184,20 +184,54 @@ namespace hl7service
 			
 			sqlString += ");";
 			
-			Logger.Debug("SQL Command: " + sqlString);			
+			Logger.Debug("SQL Command: " + sqlString);
 
 			SqlConnection myConnection = new SqlConnection();		
 			myConnection.ConnectionString = this.connectionString;
 			
 			bool allOk = true;
+			
+			string sqlCheckNHC = string.Empty;
+			
+			if (sql["NHC"] != "NULL")
+			{
+				// Before adding our patient we must check that there is not already in our database.
+				// To do that, we check its NHC number
+				
+				sqlCheckNHC = "SELECT COUNT(*) FROM SCAPersona WHERE NHC = '" + sql["NHC"] + "'";
+			}
+			
+			bool addIt = false;
 
 			try 
 			{
 				myConnection.Open();
 				
-				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
+				if (sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
+				{
+					SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
+					if ((Int32)checkNHCCmd.ExecuteScalar() == 0)
+					{
+						// Ok, it does not exist, we can add it.
+						addIt = true;
+					}
+					else
+					{
+						Logger.Debug("Sorry, patient with NHC '" + sql["NHC"] + "' already exists in DB.");
+						addIt = false;
+					}
+				}
+				else
+				{
+					// NHC is null, we add it.
+					addIt = true;
+				}
 				
-				myCmd.ExecuteNonQuery();
+				if (addIt)
+				{
+					SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
+					myInsertCmd.ExecuteNonQuery();
+				}
 
 				myConnection.Close();
 			}
