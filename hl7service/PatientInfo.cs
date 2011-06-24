@@ -207,6 +207,8 @@ namespace hl7service
 			{
 				myConnection.Open();
 				
+				Logger.Debug("Connected to SQL Server");
+				
 				if (sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
 				{
 					SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
@@ -234,6 +236,8 @@ namespace hl7service
 				}
 
 				myConnection.Close();
+				
+				Logger.Debug("Connection to SQL Server closed");
 			}
 			catch(Exception e)
 			{
