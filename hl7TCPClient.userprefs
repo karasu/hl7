@@ -2,7 +2,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" ctype="Workspace" />
   <MonoDevelop.Ide.Workbench ActiveDocument="hl7TCPClient/Main.cs" ctype="Workbench">
     <Files>
-      <File FileName="hl7TCPClient/Main.cs" Line="40" Column="5" />
+      <File FileName="hl7TCPClient/Main.cs" Line="104" Column="6" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

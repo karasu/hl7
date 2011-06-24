@@ -157,6 +157,9 @@ namespace hl7service
 				sqlString += key + ", ";
 			}
 
+			// treu la coma final que s'ha afegit de més.
+			sqlString = sqlString.TrimEnd(new Char [] {' ',','});
+
 			sqlString += ") VALUES (";
 
 			if (sql["ALTA"] == "NULL") // Alta can't be NULL
@@ -177,7 +180,7 @@ namespace hl7service
 			}
 
 			// treu la coma final que s'ha afegit de més.
-			sqlString = sqlString.TrimEnd(new Char [] {','});
+			sqlString = sqlString.TrimEnd(new Char [] {' ',','});
 			
 			sqlString += ");";
 			
@@ -195,6 +198,8 @@ namespace hl7service
 				SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 				
 				myCmd.ExecuteNonQuery();
+
+				myConnection.Close();
 			}
 			catch(Exception e)
 			{
