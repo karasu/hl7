@@ -16,7 +16,7 @@ namespace hl7service
 {
 	static class Logger 
 	{
-		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service-" + DateTime.Today.ToString("yyyyMMdd") + ".log";
+		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service_" + DateTime.Today.ToString("yyyy-MM-dd") + ".log.txt";
 			                
 		public static void Debug (string str)
 		{
@@ -84,16 +84,11 @@ namespace hl7service
 
         public HL7Service()
         {
-			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
-			
-			folder = ini.getValue("service", "folder", "/tmp/hl7");
-			port = ini.getValue("service", "port", 8901);
-			csv_field_delimiter = ini.getValue("service", "csv", ",")[0];
         }
 
-		public void createDefaultIni()
+		public void createDefaultIni(string fileName)
 		{
-			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+			inifile ini = new inifile();
 			
 			ini.setValue("database", "user", "sa");
 			ini.setValue("database", "password", "123456");
@@ -106,7 +101,7 @@ namespace hl7service
 			ini.setValue("service", "port", 8901);
 			ini.setValue("service", "csv", ",");
 			
-			ini.Save(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+			ini.Save(fileName);
 		}
 		
 		public bool checkSQLConnection()
@@ -130,13 +125,30 @@ namespace hl7service
 				Logger.Fatal("Can't connect to the SQL Database server");
 			}
 		}
+		
+		public void loadSetup()
+		{
+			string fileName = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini";
+			
+			if (File.Exists(fileName) == false)
+			{
+				createDefaultIni(fileName);
+			}
+			
+			inifile ini = new inifile(fileName);
+			
+			folder = ini.getValue("service", "folder", "/tmp/hl7");
+			port = ini.getValue("service", "port", 8901);
+			csv_field_delimiter = ini.getValue("service", "csv", ",")[0];
+		}
+
 
         public static void Main(string[] args)
         {
             HL7Service hl7 = new HL7Service();
 			
-			// hl7.createDefaultIni();
-			
+			hl7.loadSetup();
+						
 			hl7.run();
         }
     }
