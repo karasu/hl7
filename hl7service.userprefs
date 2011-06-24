@@ -1,0 +1,26 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="hl7service/FileHandler.cs" ctype="Workbench">
+    <Files>
+      <File FileName="hl7service/PatientInfo.cs" Line="375" Column="1" />
+      <File FileName="hl7service/Service.cs" Line="19" Column="137" />
+      <File FileName="hl7service/SQLInfo.cs" Line="49" Column="5" />
+      <File FileName="hl7service/inifile.cs" Line="100" Column="1" />
+      <File FileName="hl7service/TCPHandler.cs" Line="124" Column="1" />
+      <File FileName="hl7service/FileHandler.cs" Line="57" Column="41" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="hl7service" expanded="True">
+            <Node name="FileHandler.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches ctype="PinnedWatchStore" />
+</Properties>
