@@ -306,9 +306,23 @@ namespace hl7service
 			}
 			
 			// Get SQL Info from HL7v3
+/*
+ 			"classCode", "determinerCode", "id", "given", "family", "administrativeGenderCode", "birthTime",
+			"deceasedInd", "deceasedTime", "multipleBirthInd", "multipleBirthOrderNumber", "organDonorInd",
+			"maritalStatusCode", "educationLevelCode", "disabilityCode", "livingArrangementCode",
+			"religiousAffiliationCode",	"raceCode", "ethnicGroupCode"};
 		
-			/*
+		protected StringDictionary sql = new StringDictionary();
+					
+		protected string [] sqlKeys = new string [] {
+			"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
+			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
+			"Field9","Field10","Alta" };
+ 
+*/
+			
 			// Now convert it to SQL
+
 			sql.Clear();
 			
 			sql.Add("Tipo","2");
@@ -317,25 +331,10 @@ namespace hl7service
 
 			// Calculem quins seran els camps Nombre1, Apellido1 i Apellido2
 			
-			string fullName = hl7v2["PatientName"];
+			sql.Add("Nombre1", hl7v3["given"]);
 			
-			// separem per ^. Primer ve el 1r cognom i després el nom.
-			string [] split = fullName.Split(new Char [] {'^'});
-			
-			sql.Add("Apellido1", split[0]);
+			sql.Add("Apellido1", hl7v3["family"]);
 			sql.Add("Apellido2", "NULL");
-			
-			if (hl7v2.ContainsKey("MothersMaidenName"))
-			{
-				sql["Apellido2"] = hl7v2["MothersMaidenName"];
-			}
-
-			// La i comença a 1 expressament en el for perquè el primer "split" és el 1r cognom
-			sql.Add("Nombre1", string.Empty);
-			for (int i=1; i<split.Length; i++)
-			{
-				sql["Nombre1"] += split[i] + " ";
-			}
 			
 			// Nombre = Apellido1 Apellido2, Nombre1		
 			if (sql["Apellido2"] != "NULL")
@@ -348,10 +347,11 @@ namespace hl7service
 			}
 			
 			// NHC
+			
 			sql.Add("NHC", "NULL");
-			if (hl7v2.ContainsKey("InternalID"))
+			if (hl7v2.ContainsKey("id"))
 			{
-				sql["NHC"] = hl7v2["InternalID"];
+				sql["NHC"] = hl7v2["id"];
 			}
 			
 			// Field fields (not used)
@@ -368,8 +368,6 @@ namespace hl7service
 			sql.Add("Alta", today.ToString("yyyyMMdd"));
 			
 			return storeSQL();
-			 */
-			return false;
 		}
 	}
 }
