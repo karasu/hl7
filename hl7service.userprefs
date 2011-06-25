@@ -2,7 +2,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
   <MonoDevelop.Ide.Workbench ActiveDocument="hl7service/PatientInfo.cs" ctype="Workbench">
     <Files>
-      <File FileName="hl7service/PatientInfo.cs" Line="202" Column="27" />
+      <File FileName="hl7service/PatientInfo.cs" Line="389" Column="23" />
       <File FileName="hl7service/Service.cs" Line="140" Column="59" />
       <File FileName="hl7service/SQLInfo.cs" Line="24" Column="1" />
       <File FileName="hl7service/inifile.cs" Line="100" Column="1" />

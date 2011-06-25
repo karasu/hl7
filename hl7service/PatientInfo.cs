@@ -349,27 +349,18 @@ namespace hl7service
 				}
 			}
 			
-			// Get SQL Info from HL7v3
-/*
+			/*
  			"classCode", "determinerCode", "id", "given", "family", "administrativeGenderCode", "birthTime",
 			"deceasedInd", "deceasedTime", "multipleBirthInd", "multipleBirthOrderNumber", "organDonorInd",
 			"maritalStatusCode", "educationLevelCode", "disabilityCode", "livingArrangementCode",
 			"religiousAffiliationCode",	"raceCode", "ethnicGroupCode"};
+			*/
 		
-		protected StringDictionary sql = new StringDictionary();
-					
-		protected string [] sqlKeys = new string [] {
-			"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
-			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
-			"Field9","Field10","Alta" };
- 
-*/
-			
 			// Now convert it to SQL
 
 			sql.Clear();
 			
-			sql.Add("Tipo","2");
+			sql.Add("Tipo", "2");
 			
 			sql.Add("Referencia", "NULL");
 
@@ -393,9 +384,9 @@ namespace hl7service
 			// NHC
 			
 			sql.Add("NHC", "NULL");
-			if (hl7v2.ContainsKey("id"))
+			if (hl7v3.ContainsKey("id"))
 			{
-				sql["NHC"] = hl7v2["id"];
+				sql["NHC"] = hl7v3["id"];
 			}
 			
 			// Field fields (not used)
