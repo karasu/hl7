@@ -226,6 +226,7 @@ namespace hl7service
 				else
 				{
 					// NHC is null, we add it.
+					// Should we check it's name here? Or it's ok to risk having duplicates ¿?
 					addIt = true;
 				}
 				
