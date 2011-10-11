@@ -327,19 +327,7 @@ namespace hl7service
 		}
 		
 		public void fromXLStoSQL(string filePath)
-		{
-			/*
-			Per defecte els valors seran:
-			Tipo = 2
-			Referencia = NULL
-			Nombre = Segona columna
-			Nombre1 = Segona columna
-			Apellido2 = NULL
-			NHC = Primera Columna
-			FieldX = NULL
-			Alta = Data actual
-			*/
-			
+		{			
 			FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
 
 			// 1. Reading from a binary Excel file ('97-2003 format; *.xls)
@@ -352,13 +340,54 @@ namespace hl7service
 			// DataSet result = excelReader.AsDataSet();
 
 			//5. Data Reader methods
-			//while (excelReader.Read())
-			//{
-				//excelReader.GetInt32(0);
-			//}
 
-			//6. Free resources (IExcelDataReader is IDisposable)
-			//excelReader.Close();			
+			/*
+			Per defecte els valors seran:
+			Tipo = 2
+			Referencia = NULL
+			Nombre = Segona columna
+			Nombre1 = Segona columna
+			Apellido2 = NULL
+			NHC = Primera Columna
+			FieldX = NULL
+			Alta = Data actual
+			*/
+			
+			while (excelReader.Read())
+			{
+				//excelReader.GetInt32(0);
+				string c1 = excelReader.GetString(0);
+				string c2 = excelReader.GetString(1);
+				
+				if (c1.Length > 0 && c2.Length > 0)
+				{
+					sql.Clear();				
+					
+					sql.Add("Tipo","2");		
+					sql.Add("Referencia", "NULL");
+					sql.Add("Nombre", c2);
+					sql.Add("Nombre1", c2);
+					sql.Add("Apellido2", "NULL");
+					sql.Add("NHC", c1);					
+					
+					// Field fields (not used)
+					
+					foreach (string key in field_keys)
+					{
+						sql.Add(key, "NULL");
+					}
+					
+					// Alta
+					
+					DateTime today = DateTime.Today;
+		
+					sql.Add("Alta", today.ToString("yyyyMMdd"));
+	
+					storeSQL();
+				}
+			}
+
+			excelReader.Close();			
 		}
 		
 		public bool fromHL7v3toSQL(string xml)
