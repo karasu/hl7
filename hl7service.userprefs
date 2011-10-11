@@ -1,13 +1,13 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="hl7service/PatientInfo.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="hl7service/PatientInfo.cs">
     <Files>
       <File FileName="hl7service/PatientInfo.cs" Line="229" Column="80" />
-      <File FileName="hl7service/Service.cs" Line="140" Column="59" />
-      <File FileName="hl7service/SQLInfo.cs" Line="24" Column="1" />
-      <File FileName="hl7service/inifile.cs" Line="100" Column="1" />
-      <File FileName="hl7service/TCPHandler.cs" Line="124" Column="1" />
-      <File FileName="hl7service/FileHandler.cs" Line="57" Column="41" />
+      <File FileName="hl7service/Service.cs" Line="1" Column="1" />
+      <File FileName="hl7service/SQLInfo.cs" Line="1" Column="1" />
+      <File FileName="hl7service/inifile.cs" Line="1" Column="1" />
+      <File FileName="hl7service/TCPHandler.cs" Line="1" Column="1" />
+      <File FileName="hl7service/FileHandler.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -22,5 +22,5 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches ctype="PinnedWatchStore" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

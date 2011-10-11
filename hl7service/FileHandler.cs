@@ -18,7 +18,7 @@ namespace hl7service
 		
 		private FileSystemWatcher watcher = null;
 
-		string [] extensions = new string [] {"txt","csv","hl7"};
+		string [] extensions = new string [] {"txt","csv","hl7", "xls"};
 		
         public FileHandler(String folder, char csv_field_delimiter)
         {
@@ -190,6 +190,11 @@ namespace hl7service
 			else if (fileName.EndsWith("txt"))
 			{
 				p.fromTXTtoSQL(message);
+				SQLstored = true;
+			}
+			else if (fileName.EndsWith("xls"))
+			{
+				p.fromXLStoSQL(fileName);
 				SQLstored = true;
 			}
 		
