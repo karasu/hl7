@@ -1,9 +1,12 @@
-Very simplistic TCP/IP service to handle Health Level Seven files, plain
-text files and csv files.
+A TCP/IP service to handle Health Level Seven files, plain
+text files, csv files and xls (excel) files.
+
+It listens for TCP connections and also scans a folder for new files.
 
 It adds patient info to a SQL Server database.
 
 Also a simple TCP/IP client has been developed to test the service.
 
 karasu
+
 
