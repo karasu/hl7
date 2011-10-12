@@ -140,8 +140,13 @@ namespace hl7service
 			folder = ini.getValue("service", "folder", "/tmp/hl7");
 			port = ini.getValue("service", "port", 8901);
 			csv_field_delimiter = ini.getValue("service", "csv", ",")[0];
+			
+			// Check that reveiving folder exists, if not we create it
+			if (!Directory.Exists(folder))
+			{
+        		Directory.CreateDirectory(folder);
+			}
 		}
-
 
         public static void Main(string[] args)
         {

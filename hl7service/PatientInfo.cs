@@ -153,7 +153,7 @@ namespace hl7service
 			// Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 					
 			// Create SQL String
-			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta			toSQL();
+			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta
 			
 			string sqlString = "INSERT INTO SCAPersona (";
 
@@ -327,12 +327,14 @@ namespace hl7service
 		}
 		
 		public void fromXLStoSQL(string filePath)
-		{			
+		{
+			Logger.Debug(filePath);
 			FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
 
-			// 1. Reading from a binary Excel file ('97-2003 format; *.xls)
+			Logger.Debug("Reading from a binary Excel file ('97-2003 format; *.xls)");
+			
 			IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(stream);
-
+						
 			// 2. Reading from a OpenXml Excel file (2007 format; *.xlsx)
 			// IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
 
@@ -342,36 +344,43 @@ namespace hl7service
 			//5. Data Reader methods
 
 			/*
+			 // Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta 
 			Per defecte els valors seran:
 			Tipo = 2
 			Referencia = NULL
 			Nombre = Segona columna
 			Nombre1 = Segona columna
+			Apellido1 = NULL
 			Apellido2 = NULL
 			NHC = Primera Columna
 			FieldX = NULL
 			Alta = Data actual
 			*/
-			
+				
 			while (excelReader.Read())
 			{
 				//excelReader.GetInt32(0);
+				
 				string c1 = excelReader.GetString(0);
 				string c2 = excelReader.GetString(1);
-				
-				if (c1.Length > 0 && c2.Length > 0)
+			
+				if (c1 != null && c2 != null)
 				{
+					Logger.Debug(c1);
+					Logger.Debug(c2);
+					
 					sql.Clear();				
 					
 					sql.Add("Tipo","2");		
 					sql.Add("Referencia", "NULL");
 					sql.Add("Nombre", c2);
 					sql.Add("Nombre1", c2);
+					sql.Add("Apellido1", "NULL");
 					sql.Add("Apellido2", "NULL");
 					sql.Add("NHC", c1);					
 					
 					// Field fields (not used)
-					
+
 					foreach (string key in field_keys)
 					{
 						sql.Add(key, "NULL");
@@ -382,7 +391,7 @@ namespace hl7service
 					DateTime today = DateTime.Today;
 		
 					sql.Add("Alta", today.ToString("yyyyMMdd"));
-	
+					
 					storeSQL();
 				}
 			}
