@@ -18,7 +18,7 @@ namespace hl7service
 		
 		private FileSystemWatcher watcher = null;
 
-		string [] extensions = new string [] {"txt","csv","hl7", "xls"};
+		string [] extensions = new string [] {"txt", "csv", "hl7", "xls", "xlsx" };
 		
         public FileHandler(String folder, char csv_field_delimiter)
         {

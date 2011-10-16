@@ -22,7 +22,7 @@ namespace hl7service
 			// If opciones.xml exists, we read SQL Server connection info from it
 			connectionString = "";
 			
-			if (loadXml("opciones.xml") == false)
+			if (loadXml("Opciones.xml") == false)
 			{
 				loadIni("hl7service.ini");
 			}
@@ -49,7 +49,7 @@ namespace hl7service
 	
 		public bool loadXml(string fileName)
 		{
-			fileName = System.AppDomain.CurrentDomain.BaseDirectory + "opciones.xml";
+			fileName = System.AppDomain.CurrentDomain.BaseDirectory + fileName;
 			
 			if (File.Exists (fileName))
 			{
@@ -58,7 +58,7 @@ namespace hl7service
 				
 				while(xml.Read())
 				{
-					if (xml.NodeType == XmlNodeType.Element && xml.Name == "")
+					if (xml.NodeType == XmlNodeType.Element && xml.Name == "constr")
 					{
                			connectionString = xml.ReadString();
 						xml.Close();
