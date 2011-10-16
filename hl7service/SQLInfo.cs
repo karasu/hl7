@@ -13,8 +13,7 @@ namespace hl7service
 		public bool trusted_connection;
 		public string database;
 		public int timeout;
-		public string table;
-		
+				
 		public string connectionString;
 				
 		public SQLServerInfo()
@@ -42,8 +41,7 @@ namespace hl7service
 			this.trusted_connection = ini.getValue("database", "trusted_connection", true);
 			this.database = ini.getValue("database", "database", "SCA5t");
 			this.timeout = ini.getValue("database", "timeout", 30);
-			this.table = ini.getValue("database", "table", "SCAPersona");
-
+			
 			connectionString = "Data Source=" + server_url + ";Initial Catalog=" + database + ";User Id=" + user + ";Password=" + password;
 		}
 	

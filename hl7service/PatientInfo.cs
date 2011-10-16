@@ -19,7 +19,7 @@ namespace hl7service
 		
 		// SQL Patient info
 		
-		public string table = string.Empty;
+		//public string table = string.Empty;
 
 		// HL7 v2 Patient info
 		
@@ -43,14 +43,7 @@ namespace hl7service
 			"classCode", "determinerCode", "id", "given", "family", "administrativeGenderCode", "birthTime",
 			"deceasedInd", "deceasedTime", "multipleBirthInd", "multipleBirthOrderNumber", "organDonorInd",
 			"maritalStatusCode", "educationLevelCode", "disabilityCode", "livingArrangementCode",
-			"religiousAffiliationCode",	"raceCode", "ethnicGroupCode"};
-		
-		protected StringDictionary sql = new StringDictionary();
-					
-		protected string [] sqlKeys = new string [] {
-			"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
-			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
-			"Field9","Field10","Alta" };
+			"religiousAffiliationCode",	"raceCode", "ethnicGroupCode"};						
 		
 		protected string [] field_keys = new string [] {
 			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8","Field9","Field10" };
@@ -60,7 +53,6 @@ namespace hl7service
 			SQLServerInfo sqlInfo = new SQLServerInfo();
 			
 			this.connectionString = sqlInfo.connectionString;
-			this.table = sqlInfo.table;
 			
 			hl7v2.Clear();
 		}
@@ -87,6 +79,8 @@ namespace hl7service
 			}
 			
 			// Now convert it to SQL
+			StringDictionary sql = new StringDictionary();
+			
 			sql.Clear();
 			
 			sql.Add("Tipo","2");
@@ -145,18 +139,43 @@ namespace hl7service
 
 			sql.Add("Alta", today.ToString("yyyyMMdd"));
 			
-			return storeSQL();
+			return storeSQL("SCAPersona", sql);
 		}
 		
-		protected bool storeSQL()
+		string [] getSQLKeys(string table)
+		{
+			string [] sqlKeys_SCAPersona = new string [] {
+				"Tipo","Referencia","Nombre","Nombre1","Apellido1","Apellido2","NHC",
+				"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
+				"Field9","Field10","Alta" };
+			
+			switch(table)
+			{
+				case "SCAPersona": return sqlKeys_SCAPersona;
+			}
+			
+			return null;
+		}
+		
+		protected bool storeSQL(string table, StringDictionary sql)
 		{
 			// Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 					
 			// Create SQL String
+			
+			// SCAPersona
 			// Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta
 			
-			string sqlString = "INSERT INTO SCAPersona (";
-
+			string sqlString = "INSERT INTO " + table + " (";
+			
+			string [] sqlKeys = getSQLKeys(table);
+			
+			if (sqlKeys == null)
+			{
+				Logger.Debug("SQL Table " + table + "is unknown.");
+				return false;
+			}
+			
 			foreach (string key in sqlKeys)
 			{
 				sqlString += key + ", ";
@@ -268,11 +287,14 @@ namespace hl7service
 					// Hem de recòrrer la línia. El caràcter csv_field_delimiter separa els camps
 					// però s'ha de vigilar perquè aquest mateix caràcter pot estar dins d'un string.
 					
+					StringDictionary sql = new StringDictionary();
 					sql.Clear();
 					
 					int i = 0, k = 0;
 					bool insideString = false;
 					string field = string.Empty;
+					
+					string [] sqlKeys = getSQLKeys("SCAPersona");
 								
 					while (i < line.Length)
 					{
@@ -293,7 +315,7 @@ namespace hl7service
 						i++;
 					}
 	
-					storeSQL();
+					storeSQL("SCAPersona", sql);
 				}
 			}
 		}
@@ -312,16 +334,19 @@ namespace hl7service
 					string [] split = line.Split(new Char [] {'\t'});
 					
 					// Convert it to SQL
+					StringDictionary sql = new StringDictionary();
 					sql.Clear();
 					
 					int keyIndex = 0;
+					
+					string [] sqlKeys = getSQLKeys("SCAPersona");
 					
 					foreach(string s in split)
 					{
 						sql.Add(sqlKeys[keyIndex++], s);
 					}		
 				
-					storeSQL();
+					storeSQL("SCAPersona", sql);
 				}
 			}			
 		}
@@ -356,28 +381,45 @@ namespace hl7service
 				FieldX = NULL
 				Alta = Data actual
 			*/
-				
+					
 			while (excelReader.Read())
 			{
 				//excelReader.GetInt32(0);
 				
 				string c1 = excelReader.GetString(0);
 				string c2 = excelReader.GetString(1);
-			
+				string c3 = excelReader.GetString(2);
+
+				string nom = "";
+				string nhc = "";
+				string refmuestra = "";
+				
 				if (c1 != null && c2 != null)
 				{
-					Logger.Debug(c1);
-					Logger.Debug(c2);
+					if (c3 != null)
+					{
+						refmuestra = c1;
+						nhc = c2;
+						nom = c3;
+					}
+					else
+					{
+						nhc = c1;
+						nom = c2;
+					}
+					// Logger.Debug(c1);
+					// Logger.Debug(c2);
 					
+					StringDictionary sql = new StringDictionary();
 					sql.Clear();				
 					
 					sql.Add("Tipo","2");		
 					sql.Add("Referencia", "NULL");
-					sql.Add("Nombre", c2);
-					sql.Add("Nombre1", c2);
+					sql.Add("Nombre", nom);
+					sql.Add("Nombre1", nom);
 					sql.Add("Apellido1", "NULL");
 					sql.Add("Apellido2", "NULL");
-					sql.Add("NHC", c1);					
+					sql.Add("NHC", nhc);					
 					
 					// Field fields (not used)
 
@@ -392,7 +434,23 @@ namespace hl7service
 		
 					sql.Add("Alta", today.ToString("yyyyMMdd"));
 					
-					storeSQL();
+					storeSQL("SCAPersona", sql);
+					
+					if (c3 != null)
+					{
+						/*
+						Si el xls té tres columnes, a part d’emplenar la taula SCAPersona tal i com ja ho fa,
+						hauries d’emplenar també la taula SCAMuestra on la primera columna seria la referencia de la mostra.
+						Tots els altres camps de SCAMuestra els hauries de posar amb un valor per defecte
+						*/
+						
+						sql.Clear();
+						
+						sql.Add ("","");
+						sql.Add ("Referencia", "NULL");
+						
+						storeSQL("SCAMuestra", sql);
+					}
 				}
 			}
 
@@ -436,7 +494,7 @@ namespace hl7service
 			*/
 		
 			// Now convert it to SQL
-
+			StringDictionary sql = new StringDictionary();
 			sql.Clear();
 			
 			sql.Add("Tipo", "2");
@@ -481,7 +539,7 @@ namespace hl7service
 
 			sql.Add("Alta", today.ToString("yyyyMMdd"));
 			
-			return storeSQL();
+			return storeSQL("SCAPersona", sql);
 		}
 	}
 }
