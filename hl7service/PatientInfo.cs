@@ -457,6 +457,7 @@ namespace hl7service
 					if (c3 != null)
 					{
 						/*
+						 TODO:
 						Si el xls té tres columnes, a part d’emplenar la taula SCAPersona tal i com ja ho fa,
 						hauries d’emplenar també la taula SCAMuestra on la primera columna seria la referencia de la mostra.
 						Tots els altres camps de SCAMuestra els hauries de posar amb un valor per defecte
