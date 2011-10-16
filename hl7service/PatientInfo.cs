@@ -154,9 +154,17 @@ namespace hl7service
 				"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8",
 				"Field9","Field10","Alta" };
 			
+			string [] sqlKeys_SCAMuestra = new string [] {
+				"IdEspecie", "Referencia", "FechaAnalisis", "HoraAnalisis", "Volumen",
+				"FechaObtencion", "HoraObtencion", "HoraEntrega", "DiasAbstinencia",
+				"pH", "Temperatura", "IdOtrasPropiedades", "Observaciones", "local",
+				"Other", "Confirmed", "Optional1", "Optional2", "Optional3", "Optional4",
+				"Optional5", "Optional6", "Optional7", "Optional8", "Optional9", "Optional10" };
+			
 			switch(table)
 			{
 				case "SCAPersona": return sqlKeys_SCAPersona;
+				case "SCAMuestra": return sqlKeys_SCAMuestra;
 			}
 			
 			return null;
@@ -407,13 +415,13 @@ namespace hl7service
 
 				string nom = "";
 				string nhc = "";
-				string refmuestra = "";
+				string referencia = "";
 				
 				if (c1 != null && c2 != null)
 				{
 					if (c3 != null)
 					{
-						refmuestra = c1;
+						referencia = c1;
 						nhc = c2;
 						nom = c3;
 					}
@@ -454,10 +462,9 @@ namespace hl7service
 						return false;
 					}
 					
-					if (c3 != null)
+					if (c3 != null && referencia.Length > 0)
 					{
 						/*
-						 TODO:
 						Si el xls té tres columnes, a part d’emplenar la taula SCAPersona tal i com ja ho fa,
 						hauries d’emplenar també la taula SCAMuestra on la primera columna seria la referencia de la mostra.
 						Tots els altres camps de SCAMuestra els hauries de posar amb un valor per defecte
@@ -465,8 +472,14 @@ namespace hl7service
 						
 						sql.Clear();
 						
-						sql.Add ("","");
-						sql.Add ("Referencia", "NULL");
+						string [] sqlKeys = getSQLKeys("SCAMuestra");
+						
+						foreach (string key in sqlKeys)
+						{
+							sql.Add (key, "NULL");
+						}
+						
+						sql["Referencia"] = referencia;
 						
 						if (storeSQL("SCAMuestra", sql) == false)
 						{
