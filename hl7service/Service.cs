@@ -11,12 +11,13 @@ using System.Configuration;
 using System.Configuration.Install;
 
 using System.Threading;
+using System.Xml;
 
 namespace hl7service
 {
 	static class Logger 
 	{
-		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service_" + DateTime.Today.ToString("yyyy-MM-dd") + ".log";
+		private static string fullPath = System.AppDomain.CurrentDomain.BaseDirectory + "hl7service" + DateTime.Today.ToString("yyyyMMdd") + ".log";
 			                
 		public static void Debug (string str)
 		{
@@ -141,11 +142,11 @@ namespace hl7service
 			port = ini.getValue("service", "port", 8901);
 			csv_field_delimiter = ini.getValue("service", "csv", ",")[0];
 			
-			// Check that reveiving folder exists, if not we create it
+			// Check that receiving folder exists, if not we create it
 			if (!Directory.Exists(folder))
 			{
         		Directory.CreateDirectory(folder);
-			}
+			}		
 		}
 
         public static void Main(string[] args)

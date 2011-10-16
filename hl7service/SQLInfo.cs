@@ -13,12 +13,25 @@ namespace hl7service
 		public int timeout;
 		public string table;
 		
-		public string connectionString;
+		protected string connectionString;
 				
 		public SQLServerInfo()
 		{
-			// Get defaults
-			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + "hl7service.ini");
+			// If opciones.xml exists, we read SQL Server connection info from it
+			
+			if (loadXml("opciones.xml") == false)
+			{
+				loadIni("hl7service.ini");
+			}
+			
+			Logger.Debug("Connection string: " + connectionString);
+		}
+		
+		public bool loadIni(string fileName)
+		{
+			// Get SQL Server connection info from INI file (or use defaults)
+			
+			inifile ini = new inifile(System.AppDomain.CurrentDomain.BaseDirectory + fileName);
 			
 			this.user = ini.getValue("database", "user", "sa");
 			this.password = ini.getValue("database", "password", "123456");
@@ -29,8 +42,29 @@ namespace hl7service
 			this.table = ini.getValue("database", "table", "SCAPersona");
 
 			connectionString = "Data Source=" + server_url + ";Initial Catalog=" + database + ";User Id=" + user + ";Password=" + password;
+		}
+	
+		public bool loadXml(string fileName)
+		{
+		
+			fileName = System.AppDomain.CurrentDomain.BaseDirectory + "opciones.xml";
 			
-			Logger.Debug("Connection string: " + connectionString);
+			if (File.Exists (fileName))
+			{
+				StreamReader reader = new StreamReader(fileName, System.Text.Encoding.UTF8);
+				XmlTextReader xml = new XmlTextReader (reader);
+				
+				while(xml.Read())
+				{
+					if (xml.NodeType == XmlNodeType.Element && xml.Name == "")
+					{
+               			connection_string = xml.ReadString();
+						xml.Close();
+       				}
+				}
+				
+				xml.Close();
+			}
 		}
 		
 		public bool checkConnection()
