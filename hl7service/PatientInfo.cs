@@ -77,6 +77,11 @@ namespace hl7service
 					hl7v2.Add(hl7v2Keys[index], hl7[index]);
 				}
 			}
+			else
+			{
+				// It must have a PATIENT_ID
+				return false;
+			}
 			
 			// Now convert it to SQL
 			StringDictionary sql = new StringDictionary();
@@ -274,7 +279,7 @@ namespace hl7service
 			return allOk;
 		}
 		
-		public void fromCSVtoSQL(string text, char csv_field_delimiter)
+		public bool fromCSVtoSQL(string text, char csv_field_delimiter)
 		{
 			string [] lines = text.Split(new Char [] {'\n'});
 			
@@ -315,12 +320,17 @@ namespace hl7service
 						i++;
 					}
 	
-					storeSQL("SCAPersona", sql);
+					if (storeSQL("SCAPersona", sql) == false)
+					{
+						return false;
+					}
 				}
 			}
+
+			return true;
 		}
 
-		public void fromTXTtoSQL(string text)
+		public bool fromTXTtoSQL(string text)
 		{
 			string [] lines = text.Split(new Char [] {'\n'});
 			
@@ -346,12 +356,17 @@ namespace hl7service
 						sql.Add(sqlKeys[keyIndex++], s);
 					}		
 				
-					storeSQL("SCAPersona", sql);
+					if (storeSQL("SCAPersona", sql) == false)
+					{
+						return false;
+					}
 				}
 			}			
+
+			return true;
 		}
 		
-		public void fromXLStoSQL(string filePath)
+		public bool fromXLStoSQL(string filePath)
 		{
 			Logger.Debug(filePath);
 			FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
@@ -434,7 +449,10 @@ namespace hl7service
 		
 					sql.Add("Alta", today.ToString("yyyyMMdd"));
 					
-					storeSQL("SCAPersona", sql);
+					if (storeSQL("SCAPersona", sql) == false)
+					{
+						return false;
+					}
 					
 					if (c3 != null)
 					{
@@ -449,12 +467,17 @@ namespace hl7service
 						sql.Add ("","");
 						sql.Add ("Referencia", "NULL");
 						
-						storeSQL("SCAMuestra", sql);
+						if (storeSQL("SCAMuestra", sql) == false)
+						{
+							return false;
+						}
 					}
 				}
 			}
 
-			excelReader.Close();			
+			excelReader.Close();
+
+			return true;
 		}
 		
 		public bool fromHL7v3toSQL(string xml)

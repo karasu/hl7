@@ -170,6 +170,13 @@ namespace hl7service
 						hl7v3 = true;
 					}
 				}
+				
+				if (hl7v2 == false && hl7v3 == false)
+				{
+					// Not a TCP received file. Perhaps somebody has put it in our directory.
+					// Let's assume it is a hl7v2. If it isn't fromHL7v2toSQL will simply fail and return false :p
+					hl7v2 = true;
+				}
 	
 				if (hl7v2)
 				{
@@ -184,18 +191,15 @@ namespace hl7service
 			}
 			else if (fileName.EndsWith("csv"))
 			{
-				p.fromCSVtoSQL(message, csv_field_delimiter);
-				SQLstored = true;
+				SQLstored = p.fromCSVtoSQL(message, csv_field_delimiter);
 			}
 			else if (fileName.EndsWith("txt"))
 			{
-				p.fromTXTtoSQL(message);
-				SQLstored = true;
+				SQLstored = p.fromTXTtoSQL(message);
 			}
 			else if (fileName.EndsWith("xls") || fileName.EndsWith("xlsx"))
 			{
-				p.fromXLStoSQL(fileName);
-				SQLstored = true;
+				SQLstored = p.fromXLStoSQL(fileName);
 			}
 		
 			if (SQLstored)
