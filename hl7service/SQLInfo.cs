@@ -23,6 +23,7 @@ namespace hl7service
 			
 			if (loadXml("Opciones.xml") == false)
 			{
+				// If there is no opciones.xml we use our old good friend ini file.
 				loadIni("hl7service.ini");
 			}
 			
@@ -44,7 +45,7 @@ namespace hl7service
 			
 			connectionString = "Data Source=" + server_url + ";Initial Catalog=" + database + ";User Id=" + user + ";Password=" + password;
 		}
-	
+	 
 		public bool loadXml(string fileName)
 		{
 			fileName = System.AppDomain.CurrentDomain.BaseDirectory + fileName;
@@ -66,8 +67,14 @@ namespace hl7service
 				xml.Close();
 			}
 			
-			if (connectionString.Length > 0 && connectionString.ToLower() != "none")
+			if (connectionString.Length > 0)
 			{
+				if (connectionString.ToLower() == "none")
+				{
+					// use Eduard's defaults
+					connectionString = "Data Source=.\\SQLEXPRESS;Initial Catalog=SCA5;User ID=sa;Password=Ltosmp51";
+				}
+				
 				return true;
 			}
 			
