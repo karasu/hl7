@@ -192,7 +192,7 @@ namespace hl7service
 				p.fromTXTtoSQL(message);
 				SQLstored = true;
 			}
-			else if (fileName.EndsWith("xls"))
+			else if (fileName.EndsWith("xls") || fileName.EndsWith("xlsx"))
 			{
 				p.fromXLStoSQL(fileName);
 				SQLstored = true;

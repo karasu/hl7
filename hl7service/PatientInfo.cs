@@ -332,29 +332,29 @@ namespace hl7service
 			FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
 
 			Logger.Debug("Reading from a binary Excel file ('97-2003 format; *.xls)");
+			IExcelDataReader excelReader;
 			
-			IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(stream);
-						
-			// 2. Reading from a OpenXml Excel file (2007 format; *.xlsx)
-			// IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-
-			// 3. DataSet - The result of each spreadsheet will be created in the result.Tables
-			// DataSet result = excelReader.AsDataSet();
-
-			//5. Data Reader methods
+			if (filePath.EndsWith("xls"))
+			{
+				excelReader = ExcelReaderFactory.CreateBinaryReader(stream);
+			}
+			else if (filePath.EndsWith("xlsx"))
+			{
+				excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+			}
 
 			/*
-			 // Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta 
-			Per defecte els valors seran:
-			Tipo = 2
-			Referencia = NULL
-			Nombre = Segona columna
-			Nombre1 = Segona columna
-			Apellido1 = NULL
-			Apellido2 = NULL
-			NHC = Primera Columna
-			FieldX = NULL
-			Alta = Data actual
+				 // Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta 
+				Per defecte els valors seran:
+				Tipo = 2
+				Referencia = NULL
+				Nombre = Segona columna
+				Nombre1 = Segona columna
+				Apellido1 = NULL
+				Apellido2 = NULL
+				NHC = Primera Columna
+				FieldX = NULL
+				Alta = Data actual
 			*/
 				
 			while (excelReader.Read())
