@@ -68,7 +68,7 @@ namespace hl7service
 				xml.Close();
 			}
 			
-			if (connectionString.Length > 0)
+			if (connectionString.Length > 0 && connectionString.ToLower() != "none")
 			{
 				return true;
 			}
