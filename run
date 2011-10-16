@@ -1,4 +1,5 @@
 #!/bin/sh
-cp -v ~/hl7/hl7service/bin/Debug/hl7service.exe /tmp/hl7
-cp -v ~/hl7/hl7TCPClient/bin/Debug/hl7TCPClient.exe /tmp/hl7
-mono-service2 --debug /tmp/hl7/hl7service.exe
+mkdir -p /tmp/hl7
+cp -v ~/hl7/hl7service/bin/Debug/* /tmp/hl7
+#cp -v ~/hl7/hl7TCPClient/bin/Debug/hl7TCPClient.exe /tmp/hl7
+#mono-service2 --debug /tmp/hl7/hl7service.exe

@@ -20,6 +20,7 @@ namespace hl7service
 		public SQLServerInfo()
 		{
 			// If opciones.xml exists, we read SQL Server connection info from it
+			connectionString = "";
 			
 			if (loadXml("opciones.xml") == false)
 			{
