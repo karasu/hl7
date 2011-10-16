@@ -11,7 +11,6 @@ using System.Configuration;
 using System.Configuration.Install;
 
 using System.Threading;
-using System.Xml;
 
 namespace hl7service
 {

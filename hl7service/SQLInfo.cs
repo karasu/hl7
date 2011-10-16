@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Data.SqlClient;
+using System.Xml;
 
 namespace hl7service
 {
@@ -13,7 +15,7 @@ namespace hl7service
 		public int timeout;
 		public string table;
 		
-		protected string connectionString;
+		public string connectionString;
 				
 		public SQLServerInfo()
 		{
@@ -27,7 +29,7 @@ namespace hl7service
 			Logger.Debug("Connection string: " + connectionString);
 		}
 		
-		public bool loadIni(string fileName)
+		public void loadIni(string fileName)
 		{
 			// Get SQL Server connection info from INI file (or use defaults)
 			
@@ -46,7 +48,6 @@ namespace hl7service
 	
 		public bool loadXml(string fileName)
 		{
-		
 			fileName = System.AppDomain.CurrentDomain.BaseDirectory + "opciones.xml";
 			
 			if (File.Exists (fileName))
@@ -58,13 +59,20 @@ namespace hl7service
 				{
 					if (xml.NodeType == XmlNodeType.Element && xml.Name == "")
 					{
-               			connection_string = xml.ReadString();
+               			connectionString = xml.ReadString();
 						xml.Close();
        				}
 				}
 				
 				xml.Close();
 			}
+			
+			if (connectionString.Length > 0)
+			{
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public bool checkConnection()
