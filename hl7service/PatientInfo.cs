@@ -380,7 +380,7 @@ namespace hl7service
 			FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
 
 			Logger.Debug("Reading from a binary Excel file ('97-2003 format; *.xls)");
-			IExcelDataReader excelReader;
+			IExcelDataReader excelReader = null;
 			
 			if (filePath.EndsWith("xls"))
 			{
@@ -405,13 +405,22 @@ namespace hl7service
 				Alta = Data actual
 			*/
 					
-			while (excelReader.Read())
+			while (excelReader != null && excelReader.Read())
 			{
 				//excelReader.GetInt32(0);
+
+				// TODO : crashes if no data can be read. Fix it with
+				//        a try/catch block
 				
-				string c1 = excelReader.GetString(0);
-				string c2 = excelReader.GetString(1);
-				string c3 = excelReader.GetString(2);
+				try
+				{	
+					string c1 = excelReader.GetString(0);
+					string c2 = excelReader.GetString(1);
+					string c3 = excelReader.GetString(2);
+				}
+				catch(Exception e)
+				{
+				}
 
 				string nom = "";
 				string nhc = "";

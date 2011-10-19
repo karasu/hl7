@@ -27,7 +27,7 @@ namespace hl7service
 				loadIni("hl7service.ini");
 			}
 			
-			Logger.Debug("Connection string: " + connectionString);
+			// Logger.Debug("Connection string: " + connectionString);
 		}
 		
 		public void loadIni(string fileName)
