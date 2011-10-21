@@ -390,21 +390,12 @@ namespace hl7service
 			{
 				excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
 			}
+			else
+			{
+				// wrong file extension (can't happen, but...)
+				return false;
+			}
 
-			/*
-				 // Tipo Referencia Nombre Nombre1 Apellido1 Apellido2 NHC Field1 Field2 Field3 Field4 Field5 Field6 Field7 Field8 Field9 Field10 Alta 
-				Per defecte els valors seran:
-				Tipo = 2
-				Referencia = NULL
-				Nombre = Segona columna
-				Nombre1 = Segona columna
-				Apellido1 = NULL
-				Apellido2 = NULL
-				NHC = Primera Columna
-				FieldX = NULL
-				Alta = Data actual
-			*/
-					
 			while (excelReader != null && excelReader.Read())
 			{
 				//excelReader.GetInt32(0);
@@ -412,14 +403,20 @@ namespace hl7service
 				// TODO : crashes if no data can be read. Fix it with
 				//        a try/catch block
 				
+				string c1 = "";
+				string c2 = "";
+				string c3 = "";
+
 				try
 				{	
-					string c1 = excelReader.GetString(0);
-					string c2 = excelReader.GetString(1);
-					string c3 = excelReader.GetString(2);
+					c1 = excelReader.GetString(0);
+					c2 = excelReader.GetString(1);
+					c3 = excelReader.GetString(2);
 				}
 				catch(Exception e)
 				{
+					Logger.Fatal("Can't read xls file: " + e.ToString());
+					return false;
 				}
 
 				string nom = "";
@@ -439,32 +436,15 @@ namespace hl7service
 						nhc = c1;
 						nom = c2;
 					}
+					
 					// Logger.Debug(c1);
 					// Logger.Debug(c2);
 					
-					StringDictionary sql = new StringDictionary();
-					sql.Clear();				
-					
-					sql.Add("Tipo","2");		
-					sql.Add("Referencia", "NULL");
+					StringDictionary sql = getSQLTableDefaults("SCAPersona");
+
 					sql.Add("Nombre", nom);
 					sql.Add("Nombre1", nom);
-					sql.Add("Apellido1", "NULL");
-					sql.Add("Apellido2", "NULL");
 					sql.Add("NHC", nhc);					
-					
-					// Field fields (not used)
-
-					foreach (string key in field_keys)
-					{
-						sql.Add(key, "NULL");
-					}
-					
-					// Alta
-					
-					DateTime today = DateTime.Today;
-		
-					sql.Add("Alta", today.ToString("yyyyMMdd"));
 					
 					if (storeSQL("SCAPersona", sql) == false)
 					{
@@ -474,9 +454,12 @@ namespace hl7service
 					if (c3 != null && referencia.Length > 0)
 					{
 						/*
-						Si el xls té tres columnes, a part d’emplenar la taula SCAPersona tal i com ja ho fa,
-						hauries d’emplenar també la taula SCAMuestra on la primera columna seria la referencia de la mostra.
-						Tots els altres camps de SCAMuestra els hauries de posar amb un valor per defecte
+						Si el xls té tres columnes, a part d’emplenar
+						la taula SCAPersona tal i com ja ho fa,
+						hauries d’emplenar també la taula SCAMuestra
+						on la primera columna seria la referencia de la mostra.
+						Tots els altres camps de SCAMuestra els hauries de posar
+						amb un valor per defecte
 						*/
 						
 						sql.Clear();
@@ -501,6 +484,37 @@ namespace hl7service
 			excelReader.Close();
 
 			return true;
+		}
+		
+		public StringDictionary getSQLTableDefaults(string table)
+		{
+			StringDictionary sql = new StringDictionary();
+
+			sql.Clear();				
+		
+			if (table == "SCAPersona")
+			{
+				sql.Add("Tipo","2");		
+				sql.Add("Referencia", "NULL");
+				sql.Add("Apellido1", "NULL");
+				sql.Add("Apellido2", "NULL");
+				
+				// Field fields (not used)
+				foreach (string key in field_keys)
+				{
+					sql.Add(key, "NULL");
+				}
+				
+				// Alta
+				DateTime today = DateTime.Today;
+				sql.Add("Alta", today.ToString("yyyyMMdd"));
+			}
+			else if (table == "SCAMuestra")
+			{
+				
+			}
+			
+			return sql;
 		}
 		
 		public bool fromHL7v3toSQL(string xml)
