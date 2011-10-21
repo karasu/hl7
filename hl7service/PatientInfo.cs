@@ -47,6 +47,9 @@ namespace hl7service
 		
 		protected string [] field_keys = new string [] {
 			"Field1","Field2","Field3","Field4","Field5","Field6","Field7","Field8","Field9","Field10" };
+
+		protected string [] optional_keys = new string [] {
+			"Optional1","Optional2","Optional3","Optional4","Optional5","Optional6","Optional7","Optional8","Optional9","Optional10" };
 				
 		public PatientInfo()
 		{
@@ -463,15 +466,10 @@ namespace hl7service
 						*/
 						
 						sql.Clear();
+
+						sql = getSQLTableDefaults("SCAMuestra");
 						
-						string [] sqlKeys = getSQLKeys("SCAMuestra");
-						
-						foreach (string key in sqlKeys)
-						{
-							sql.Add (key, "NULL");
-						}
-						
-						sql["Referencia"] = referencia;
+						sql.Add ("Referencia", referencia);
 						
 						if (storeSQL("SCAMuestra", sql) == false)
 						{
@@ -494,6 +492,8 @@ namespace hl7service
 		
 			if (table == "SCAPersona")
 			{
+				// Setting SCAPersona defaults
+				
 				sql.Add("Tipo","2");		
 				sql.Add("Referencia", "NULL");
 				sql.Add("Apellido1", "NULL");
@@ -511,7 +511,21 @@ namespace hl7service
 			}
 			else if (table == "SCAMuestra")
 			{
+				// Setting SCAMuestra defaults
 				
+				sql.Add ("IdEspecie", "NULL");
+				sql.Add ("IdCentro", "1");
+				sql.Add ("IdDoctor", "1");
+				
+				
+				
+				
+				
+				// Optional fields (not used)
+				foreach (string key in optional_keys)
+				{
+					sql.Add(key, "NULL");
+				}
 			}
 			
 			return sql;
