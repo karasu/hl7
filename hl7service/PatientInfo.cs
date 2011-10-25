@@ -158,11 +158,14 @@ namespace hl7service
 				"Field9","Field10","Alta" };
 			
 			string [] sqlKeys_SCAMuestra = new string [] {
-				"IdEspecie", "Referencia", "FechaAnalisis", "HoraAnalisis", "Volumen",
-				"FechaObtencion", "HoraObtencion", "HoraEntrega", "DiasAbstinencia",
-				"pH", "Temperatura", "IdOtrasPropiedades", "Observaciones", "local",
+				"IdPersona", "IdEspecie", "IdCentro", "IdDoctor", "Referencia", "FechaAnalisis",
+				"HoraAnalisis", "Volumen", "FechaObtencion", "HoraObtencion", "HoraEntrega",
+				"IdMetodoObtencion", "DiasAbstinencia", "pH", "Temperatura", "IdColor", "IdViscosidad",
+				"IdLicuefaccion", "IdAspecto", "IdOlor", "IdAglutinaciones",
+				"IdOtrasPropiedades", "Observaciones", "local",
 				"Other", "Confirmed", "Optional1", "Optional2", "Optional3", "Optional4",
-				"Optional5", "Optional6", "Optional7", "Optional8", "Optional9", "Optional10" };
+				"Optional5", "Optional6", "Optional7", "Optional8", "Optional9", "Optional10",
+				"IdCollection1", "IdCollection2" };
 			
 			switch(table)
 			{
@@ -508,7 +511,10 @@ namespace hl7service
 			//sql = new StringDictionary();
 			
 			sql.Clear();				
-		
+
+			string today = DateTime.Today.ToString("yyyyMMdd");
+			string now = DateTime.Today.ToShortTimeString();
+			
 			if (table == "SCAPersona")
 			{
 				// Setting SCAPersona defaults
@@ -525,20 +531,40 @@ namespace hl7service
 				}
 				
 				// Alta
-				DateTime today = DateTime.Today;
-				sql.Add("Alta", today.ToString("yyyyMMdd"));
+				sql.Add("Alta", today);
 			}
 			else if (table == "SCAMuestra")
 			{
 				// Setting SCAMuestra defaults
 				
+				
 				sql.Add ("IdEspecie", "NULL");
 				sql.Add ("IdCentro", "1");
 				sql.Add ("IdDoctor", "1");
-				
-				
-				// TODO
-				
+				sql.Add ("FechaAnalisis", today);
+				Logger.Debug("**** " + now);
+				sql.Add ("HoraAnalisis", now);
+				sql.Add ("Volumen", "2.5");
+				sql.Add ("FechaObtencion", today);
+				sql.Add ("HoraObtencion", now);
+				sql.Add ("HoraEntrega", now);
+				sql.Add ("IdMetodoObtencion", "1");
+				sql.Add ("DiasAbstinencia", "3");
+				sql.Add ("pH", "7.5");
+				sql.Add ("Temperatura", "37");
+				sql.Add ("IdColor", "1");
+				sql.Add ("IdViscosidad", "1");
+				sql.Add ("IdLicuefaccion", "1");
+				sql.Add ("IdAspecto", "1");
+				sql.Add ("IdOlor", "1");
+				sql.Add ("IdAglutinaciones", "1");
+				sql.Add ("IdOtrasPropiedades", "1");
+				sql.Add ("Observaciones", "NULL");
+				sql.Add ("local", "1");
+				sql.Add ("Other", "NULL");
+				sql.Add ("Confirmed", "0");
+				sql.Add ("IdCollection1", "1");
+				sql.Add ("IdCollection2", "1");
 				
 				// Optional fields (not used)
 				foreach (string key in optional_keys)
