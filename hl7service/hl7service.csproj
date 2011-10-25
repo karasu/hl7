@@ -51,6 +51,7 @@
     <Reference Include="Excel">
       <HintPath>Excel.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Data.Sqlite" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Service.cs">

@@ -6,6 +6,8 @@ using System.Collections.Specialized;
 
 using System.Xml;
 
+// just for testing purposes
+using Mono.Data.Sqlite;
 
 using System.IO;
 
@@ -228,15 +230,32 @@ namespace hl7service
 			sqlString += ");";
 			
 			Logger.Debug("SQL Command: " + sqlString);
+			
+			
+			
+			
+			
+			
+			//using sqlite3 for testing purposes
+			string connectionString = "URI=file:/home/karasu/hl7/sca.slite3,version=3";
+			
 
-			SqlConnection myConnection = new SqlConnection();		
-			myConnection.ConnectionString = this.connectionString;
+			SqliteConnection myConnection = new SqliteConnection(connectionString);
+			
+			
+			
+			
+			
+			
+			
+			// SqlConnection myConnection = new SqlConnection();		
+			// myConnection.ConnectionString = this.connectionString;
 			
 			bool allOk = true;
 			
 			string sqlCheckNHC = string.Empty;
 			
-			if (sql["NHC"] != "NULL")
+			if (table == "SCAPersona" && sql["NHC"] != "NULL")
 			{
 				// Before adding our patient we must check that there is not already in our database.
 				// To do that, we check its NHC number
@@ -252,9 +271,11 @@ namespace hl7service
 				
 				Logger.Debug("Connected to SQL Server");
 				
-				if (sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
+				if (table == "SCAPersona" && sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
 				{
-					SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
+					SqliteCommand checkNHCCmd = new SqliteCommand(sqlCheckNHC, myConnection);
+					// SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
+
 					if ((Int32)checkNHCCmd.ExecuteScalar() == 0)
 					{
 						// Ok, it does not exist, we can add it.
@@ -270,12 +291,14 @@ namespace hl7service
 				{
 					// NHC is null, we add it.
 					// Should we check it's name here? Or it's ok to risk having duplicates ¿?
+					// What about other tables? (only SCAPersona is checked)
 					addIt = true;
 				}
 				
 				if (addIt)
 				{
-					SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
+					SqliteCommand myInsertCmd = new SqliteCommand(sqlString, myConnection);
+					// SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
 					myInsertCmd.ExecuteNonQuery();
 				}
 
