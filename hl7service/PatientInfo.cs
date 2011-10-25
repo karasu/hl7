@@ -381,44 +381,68 @@ namespace hl7service
 		{
 			Logger.Debug(filePath);
 			FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
-
-			Logger.Debug("Reading from a binary Excel file ('97-2003 format; *.xls)");
+		
 			IExcelDataReader excelReader = null;
 			
 			if (filePath.EndsWith("xls"))
 			{
+				Logger.Debug("Reading from a binary Excel file ('97-2003 format; *.xls)");
 				excelReader = ExcelReaderFactory.CreateBinaryReader(stream);
 			}
 			else if (filePath.EndsWith("xlsx"))
 			{
+				Logger.Debug("Reading from a OpenXml Excel file (2007 format; *.xlsx)");
 				excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
 			}
-			else
+			
+			if (excelReader == null)
 			{
 				// wrong file extension (can't happen, but...)
+			
+				stream.Close();
+	
 				return false;
 			}
-
-			while (excelReader != null && excelReader.Read())
+			
+			try
 			{
-				//excelReader.GetInt32(0);
+				excelReader.Read();
+			}
+			catch(Exception e)
+			{
+				Logger.Fatal("Can't read xls file: " + e.ToString());
+				excelReader.Close();
+				stream.Close();
+				return false;
+			}
+			
+			int numColumns = excelReader.FieldCount;
 
-				// TODO : crashes if no data can be read. Fix it with
-				//        a try/catch block
-				
-				string c1 = "";
-				string c2 = "";
-				string c3 = "";
+			Logger.Debug("Found " + numColumns + " columns in excel file");
+			
+			if (numColumns < 2 || numColumns > 3)
+			{
+				// file format not supported
+				stream.Close();
+				return false;
+			}
+			
+			string [] columns = new string [numColumns];
 
+			do
+			{
 				try
-				{	
-					c1 = excelReader.GetString(0);
-					c2 = excelReader.GetString(1);
-					c3 = excelReader.GetString(2);
+				{
+					for (int i=0; i<numColumns; i++)
+					{
+						columns[i] = excelReader.GetString(i);
+					}
 				}
 				catch(Exception e)
 				{
 					Logger.Fatal("Can't read xls file: " + e.ToString());
+					excelReader.Close();
+					stream.Close();
 					return false;
 				}
 
@@ -426,62 +450,62 @@ namespace hl7service
 				string nhc = "";
 				string referencia = "";
 				
-				if (c1 != null && c2 != null)
+				if (numColumns >= 3)
 				{
-					if (c3 != null)
-					{
-						referencia = c1;
-						nhc = c2;
-						nom = c3;
-					}
-					else
-					{
-						nhc = c1;
-						nom = c2;
-					}
+					referencia = columns[0];
+					nhc = columns[1];
+					nom = columns[2];
+				}
+				else
+				{
+					nhc = columns[0];
+					nom = columns[1];
+				}
+				
+				StringDictionary sql = new StringDictionary();
 					
-					// Logger.Debug(c1);
-					// Logger.Debug(c2);
-					
-					StringDictionary sql = new StringDictionary();
-						
-					setSQLTableDefaults("SCAPersona", ref sql);
+				setSQLTableDefaults("SCAPersona", ref sql);
 
-					sql.Add("Nombre", nom);
-					sql.Add("Nombre1", nom);
-					sql.Add("NHC", nhc);					
+				sql.Add("Nombre", nom);
+				sql.Add("Nombre1", nom);
+				sql.Add("NHC", nhc);					
+				
+				if (storeSQL("SCAPersona", sql) == false)
+				{
+					excelReader.Close();
+					stream.Close();
+					return false;
+				}
+				
+				if (numColumns >= 3 && referencia.Length > 0)
+				{
+					/*
+					Si el xls té tres columnes, a part d’emplenar
+					la taula SCAPersona tal i com ja ho fa,
+					hauries d’emplenar també la taula SCAMuestra
+					on la primera columna seria la referencia de la mostra.
+					Tots els altres camps de SCAMuestra els hauries de posar
+					amb un valor per defecte
+					*/
 					
-					if (storeSQL("SCAPersona", sql) == false)
+					sql.Clear();
+
+					setSQLTableDefaults("SCAMuestra", ref sql);
+					
+					sql.Add("Referencia", referencia);
+					
+					if (storeSQL("SCAMuestra", sql) == false)
 					{
+						excelReader.Close();
+						stream.Close();
 						return false;
-					}
-					
-					if (c3 != null && referencia.Length > 0)
-					{
-						/*
-						Si el xls té tres columnes, a part d’emplenar
-						la taula SCAPersona tal i com ja ho fa,
-						hauries d’emplenar també la taula SCAMuestra
-						on la primera columna seria la referencia de la mostra.
-						Tots els altres camps de SCAMuestra els hauries de posar
-						amb un valor per defecte
-						*/
-						
-						sql.Clear();
-
-						setSQLTableDefaults("SCAMuestra", ref sql);
-						
-						sql.Add("Referencia", referencia);
-						
-						if (storeSQL("SCAMuestra", sql) == false)
-						{
-							return false;
-						}
 					}
 				}
 			}
+			while (excelReader.Read());
 
-			excelReader.Close();
+			excelReader.Close();	
+			stream.Close();
 
 			return true;
 		}
