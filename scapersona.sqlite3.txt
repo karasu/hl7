@@ -1,0 +1,21 @@
+CREATE TABLE scapersona (
+    "IdPersona" PK INTEGER NOT NULL,
+    "Tipo" INTEGER DEFAULT (2),
+    "Referencia" TEXT DEFAULT (NULL),
+    "Nombre" TEXT DEFAULT (NULL),
+    "Nombre1" TEXT DEFAULT (NULL),
+    "Apellido1" TEXT DEFAULT (NULL),
+    "Apellido2" TEXT DEFAULT (NULL),
+    "NHC" TEXT,
+    "Field1" TEXT DEFAULT (NULL),
+    "Field2" TEXT DEFAULT (NULL),
+    "Field3" TEXT DEFAULT (NULL),
+    "Field4" TEXT DEFAULT (NULL),
+    "Field5" TEXT DEFAULT (NULL),
+    "Field6" TEXT DEFAULT (NULL),
+    "Field7" TEXT DEFAULT (NULL),
+    "Field8" TEXT DEFAULT (NULL),
+    "Field9" TEXT DEFAULT (NULL),
+    "Field10" TEXT DEFAULT (NULL),
+    "Alta" TEXT
+)
