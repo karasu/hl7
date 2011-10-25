@@ -464,9 +464,10 @@ namespace hl7service
 					
 					if (storeSQL("SCAPersona", sql) == false)
 					{
-						excelReader.Close();
-						stream.Close();
-						return false;
+						// Commented for testing purposes
+						// excelReader.Close();
+						// stream.Close();
+						// return false;
 					}
 					
 					if (numColumns >= 3 && referencia != null)
@@ -513,7 +514,7 @@ namespace hl7service
 			sql.Clear();				
 
 			string today = DateTime.Today.ToString("yyyyMMdd");
-			string now = DateTime.Today.ToShortTimeString();
+			string now = DateTime.Now.ToShortTimeString();
 			
 			if (table == "SCAPersona")
 			{
@@ -537,12 +538,10 @@ namespace hl7service
 			{
 				// Setting SCAMuestra defaults
 				
-				
 				sql.Add ("IdEspecie", "NULL");
 				sql.Add ("IdCentro", "1");
 				sql.Add ("IdDoctor", "1");
 				sql.Add ("FechaAnalisis", today);
-				Logger.Debug("**** " + now);
 				sql.Add ("HoraAnalisis", now);
 				sql.Add ("Volumen", "2.5");
 				sql.Add ("FechaObtencion", today);
