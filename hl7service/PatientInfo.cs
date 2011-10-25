@@ -443,7 +443,9 @@ namespace hl7service
 					// Logger.Debug(c1);
 					// Logger.Debug(c2);
 					
-					StringDictionary sql = getSQLTableDefaults("SCAPersona");
+					StringDictionary sql = new StringDictionary();
+						
+					setSQLTableDefaults("SCAPersona", ref sql);
 
 					sql.Add("Nombre", nom);
 					sql.Add("Nombre1", nom);
@@ -467,9 +469,9 @@ namespace hl7service
 						
 						sql.Clear();
 
-						sql = getSQLTableDefaults("SCAMuestra");
+						setSQLTableDefaults("SCAMuestra", ref sql);
 						
-						sql.Add ("Referencia", referencia);
+						sql.Add("Referencia", referencia);
 						
 						if (storeSQL("SCAMuestra", sql) == false)
 						{
@@ -484,10 +486,10 @@ namespace hl7service
 			return true;
 		}
 		
-		public StringDictionary getSQLTableDefaults(string table)
+		public StringDictionary setSQLTableDefaults(string table, ref StringDictionary sql)
 		{
-			StringDictionary sql = new StringDictionary();
-
+			//sql = new StringDictionary();
+			
 			sql.Clear();				
 		
 			if (table == "SCAPersona")
@@ -518,7 +520,7 @@ namespace hl7service
 				sql.Add ("IdDoctor", "1");
 				
 				
-				
+				// TODO
 				
 				
 				// Optional fields (not used)
