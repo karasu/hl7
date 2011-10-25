@@ -394,48 +394,35 @@ namespace hl7service
 				Logger.Debug("Reading from a OpenXml Excel file (2007 format; *.xlsx)");
 				excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
 			}
-			
-			if (excelReader == null)
+			else
 			{
 				// wrong file extension (can't happen, but...)
 			
 				stream.Close();
+				return false;
+			}
+			
+			while (excelReader != null && excelReader.Read())
+			{
+				int numColumns = excelReader.FieldCount;
 	
-				return false;
-			}
+				Logger.Debug("Found " + numColumns + " columns in excel file");
+				
+				if (numColumns < 2 || numColumns > 3)
+				{
+					// file format not supported
+					stream.Close();
+					return false;
+				}
 			
-			try
-			{
-				excelReader.Read();
-			}
-			catch(Exception e)
-			{
-				Logger.Fatal("Can't read xls file: " + e.ToString());
-				excelReader.Close();
-				stream.Close();
-				return false;
-			}
-			
-			int numColumns = excelReader.FieldCount;
+				string [] columns = new string [numColumns];
 
-			Logger.Debug("Found " + numColumns + " columns in excel file");
-			
-			if (numColumns < 2 || numColumns > 3)
-			{
-				// file format not supported
-				stream.Close();
-				return false;
-			}
-			
-			string [] columns = new string [numColumns];
-
-			do
-			{
 				try
 				{
 					for (int i=0; i<numColumns; i++)
 					{
 						columns[i] = excelReader.GetString(i);
+						// Logger.Debug("Column " + i.ToString() + ": " + columns[i]);
 					}
 				}
 				catch(Exception e)
@@ -446,9 +433,9 @@ namespace hl7service
 					return false;
 				}
 
-				string nom = "";
-				string nhc = "";
-				string referencia = "";
+				string nom = null;
+				string nhc = null;
+				string referencia = null;
 				
 				if (numColumns >= 3)
 				{
@@ -461,48 +448,54 @@ namespace hl7service
 					nhc = columns[0];
 					nom = columns[1];
 				}
-				
-				StringDictionary sql = new StringDictionary();
-					
-				setSQLTableDefaults("SCAPersona", ref sql);
-
-				sql.Add("Nombre", nom);
-				sql.Add("Nombre1", nom);
-				sql.Add("NHC", nhc);					
-				
-				if (storeSQL("SCAPersona", sql) == false)
+								
+				if (nom != null && nhc != null)
 				{
-					excelReader.Close();
-					stream.Close();
-					return false;
-				}
-				
-				if (numColumns >= 3 && referencia.Length > 0)
-				{
-					/*
-					Si el xls té tres columnes, a part d’emplenar
-					la taula SCAPersona tal i com ja ho fa,
-					hauries d’emplenar també la taula SCAMuestra
-					on la primera columna seria la referencia de la mostra.
-					Tots els altres camps de SCAMuestra els hauries de posar
-					amb un valor per defecte
-					*/
-					
-					sql.Clear();
+					StringDictionary sql = new StringDictionary();
+						
+					setSQLTableDefaults("SCAPersona", ref sql);
 
-					setSQLTableDefaults("SCAMuestra", ref sql);
+					sql.Add("Nombre", nom);
+					sql.Add("Nombre1", nom);
+					sql.Add("NHC", nhc);					
 					
-					sql.Add("Referencia", referencia);
-					
-					if (storeSQL("SCAMuestra", sql) == false)
+					if (storeSQL("SCAPersona", sql) == false)
 					{
 						excelReader.Close();
 						stream.Close();
 						return false;
 					}
+					
+					if (numColumns >= 3 && referencia != null)
+					{
+						/*
+						Si el xls té tres columnes, a part d’emplenar
+						la taula SCAPersona tal i com ja ho fa,
+						hauries d’emplenar també la taula SCAMuestra
+						on la primera columna seria la referencia de la mostra.
+						Tots els altres camps de SCAMuestra els hauries de posar
+						amb un valor per defecte
+						*/
+						
+						sql.Clear();
+	
+						setSQLTableDefaults("SCAMuestra", ref sql);
+						
+						sql.Add("Referencia", referencia);
+						
+						if (storeSQL("SCAMuestra", sql) == false)
+						{
+							excelReader.Close();
+							stream.Close();
+							return false;
+						}
+					}
+				}
+				else
+				{
+					Logger.Debug("Empty fields or wrong number of them. Going to next row.");
 				}
 			}
-			while (excelReader.Read());
 
 			excelReader.Close();	
 			stream.Close();
@@ -510,7 +503,7 @@ namespace hl7service
 			return true;
 		}
 		
-		public StringDictionary setSQLTableDefaults(string table, ref StringDictionary sql)
+		public void setSQLTableDefaults(string table, ref StringDictionary sql)
 		{
 			//sql = new StringDictionary();
 			
@@ -553,8 +546,6 @@ namespace hl7service
 					sql.Add(key, "NULL");
 				}
 			}
-			
-			return sql;
 		}
 		
 		public bool fromHL7v3toSQL(string xml)
