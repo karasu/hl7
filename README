@@ -3,7 +3,7 @@ text files, csv files and xls (excel) files.
 
 It listens for TCP connections and also scans a folder for new files.
 
-It adds patient info to a SQL Server database.
+It adds patient info to a MS SQL Server or SQLITE3 database.
 
 Also a simple TCP/IP client has been developed to test the service.
 
