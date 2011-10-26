@@ -1,13 +1,17 @@
+#define SQLITE3
+
 using System;
 
-using System.Data.SqlClient;
 using System.Collections;
 using System.Collections.Specialized;
 
 using System.Xml;
 
-// just for testing purposes
+#if (SQLITE3)
 using Mono.Data.Sqlite;
+#else
+using System.Data.SqlClient;
+#endif
 
 using System.IO;
 
@@ -180,6 +184,14 @@ namespace hl7service
 		
 		protected bool storeSQL(string table, StringDictionary sql)
 		{
+			// use this if you don't mind which rowid has been assigned to your INSERT statement 
+			int lastInsertRowId = -1;
+			
+			return storeSQL (table, sql, ref lastInsertRowId);
+		}
+		
+		protected bool storeSQL(string table, StringDictionary sql, ref int lastInsertRowId)
+		{
 			// Logger.Debug("PatientInfo connection string: " + this.connectionString);	
 					
 			// Create SQL String
@@ -229,12 +241,13 @@ namespace hl7service
 			
 			sqlString += ");";
 					
-			//using sqlite3 for testing purposes
+			#if (SQLITE3)
 			string connectionString = "URI=file:/home/karasu/hl7/sca.sqlite3,version=3";
 			SqliteConnection myConnection = new SqliteConnection(connectionString);
-			
-			// SqlConnection myConnection = new SqlConnection();		
-			// myConnection.ConnectionString = this.connectionString;
+			#else
+			SqlConnection myConnection = new SqlConnection();		
+			myConnection.ConnectionString = this.connectionString;
+			#endif
 			
 			bool allOk = true;
 			
@@ -265,19 +278,24 @@ namespace hl7service
 			{
 				if (table == "SCAPersona" && sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
 				{
+					#if (SQLITE3)
 					SqliteCommand checkNHCCmd = new SqliteCommand(sqlCheckNHC, myConnection);
-					// SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
+					#else
+					SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
+					#endif
 					
 					int num = 0;
 					
-					// num = (Int32)checkNHCCmd.ExecuteScalar();
-					
+					#if (SQLITE3)
 					object val = checkNHCCmd.ExecuteScalar();
  
 					if (val != null)
 				    {
 				        num = Convert.ToInt32(val.ToString());
 				    }
+					#else
+					num = (Int32)checkNHCCmd.ExecuteScalar();
+					#endif
 					
 					if (num == 0)
 					{
@@ -300,13 +318,35 @@ namespace hl7service
 				
 				if (addIt)
 				{
-					SqliteCommand myInsertCmd = new SqliteCommand(sqlString, myConnection);
-					// SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
+					#if (SQLITE3)
+					SqliteCommand myCmd = new SqliteCommand(sqlString, myConnection);
+					#else
+					SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
+					#endif
 
-					myInsertCmd.ExecuteNonQuery();
+					myCmd.ExecuteNonQuery();
 
 					// Logger.Debug("SQL Command: " + sqlString);
 					Logger.Debug("Insert done.");
+					
+					#if (SQLITE3)
+					myCmd.CommandText = "SELECT @@IDENTITY";
+
+					object val = myCmd.ExecuteScalar();
+					
+					if (val != null)
+					{
+						lastInsertRowId = Convert.ToInt32(val.ToString());
+						Logger.Debug("LastInsertRowId : " + lastInsertRowId.ToString());
+					}
+					else
+					{
+						lastInsertRowId = -1;
+					}
+					#else
+					// SELECT @@IDENTITY
+					lastInsertRowId = (Int32)checkNHCCmd.ExecuteScalar();
+					#endif
 				}
 
 				myConnection.Close();
@@ -492,9 +532,11 @@ namespace hl7service
 
 					sql.Add("Nombre", nom);
 					sql.Add("Nombre1", nom);
-					sql.Add("NHC", nhc);					
+					sql.Add("NHC", nhc);
 					
-					if (storeSQL("SCAPersona", sql) == false)
+					int lastInsertRowId = -1;
+					
+					if (storeSQL("SCAPersona", sql, ref lastInsertRowId) == false)
 					{
 						excelReader.Close();
 						stream.Close();
@@ -517,6 +559,11 @@ namespace hl7service
 						setSQLTableDefaults("SCAMuestra", ref sql);
 						
 						sql.Add("Referencia", referencia);
+						
+						if (lastInsertRowId != -1)
+						{
+							sql.Add("IdPersona", lastInsertRowId.ToString());
+						}
 						
 						if (storeSQL("SCAMuestra", sql) == false)
 						{
@@ -569,32 +616,32 @@ namespace hl7service
 			{
 				// Setting SCAMuestra defaults
 				
-				sql.Add ("IdEspecie", "NULL");
-				sql.Add ("IdCentro", "1");
-				sql.Add ("IdDoctor", "1");
-				sql.Add ("FechaAnalisis", today);
-				sql.Add ("HoraAnalisis", now);
-				sql.Add ("Volumen", "2.5");
-				sql.Add ("FechaObtencion", today);
-				sql.Add ("HoraObtencion", now);
-				sql.Add ("HoraEntrega", now);
-				sql.Add ("IdMetodoObtencion", "1");
-				sql.Add ("DiasAbstinencia", "3");
-				sql.Add ("pH", "7.5");
-				sql.Add ("Temperatura", "37");
-				sql.Add ("IdColor", "1");
-				sql.Add ("IdViscosidad", "1");
-				sql.Add ("IdLicuefaccion", "1");
-				sql.Add ("IdAspecto", "1");
-				sql.Add ("IdOlor", "1");
-				sql.Add ("IdAglutinaciones", "1");
-				sql.Add ("IdOtrasPropiedades", "1");
-				sql.Add ("Observaciones", "NULL");
-				sql.Add ("local", "1");
-				sql.Add ("Other", "NULL");
-				sql.Add ("Confirmed", "0");
-				sql.Add ("IdCollection1", "1");
-				sql.Add ("IdCollection2", "1");
+				sql.Add("IdEspecie", "NULL");
+				sql.Add("IdCentro", "1");
+				sql.Add("IdDoctor", "1");
+				sql.Add("FechaAnalisis", today);
+				sql.Add("HoraAnalisis", now);
+				sql.Add("Volumen", "2.5");
+				sql.Add("FechaObtencion", today);
+				sql.Add("HoraObtencion", now);
+				sql.Add("HoraEntrega", now);
+				sql.Add("IdMetodoObtencion", "1");
+				sql.Add("DiasAbstinencia", "3");
+				sql.Add("pH", "7.5");
+				sql.Add("Temperatura", "37");
+				sql.Add("IdColor", "1");
+				sql.Add("IdViscosidad", "1");
+				sql.Add("IdLicuefaccion", "1");
+				sql.Add("IdAspecto", "1");
+				sql.Add("IdOlor", "1");
+				sql.Add("IdAglutinaciones", "1");
+				sql.Add("IdOtrasPropiedades", "1");
+				sql.Add("Observaciones", "NULL");
+				sql.Add("local", "1");
+				sql.Add("Other", "NULL");
+				sql.Add("Confirmed", "0");
+				sql.Add("IdCollection1", "1");
+				sql.Add("IdCollection2", "1");
 				
 				// Optional fields (not used)
 				foreach (string key in optional_keys)
