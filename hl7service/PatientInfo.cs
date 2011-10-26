@@ -237,7 +237,7 @@ namespace hl7service
 			
 			
 			//using sqlite3 for testing purposes
-			string connectionString = "URI=file:/home/karasu/hl7/sca.slite3,version=3";
+			string connectionString = "URI=file:/home/karasu/hl7/sca.sqlite3,version=3";
 			
 
 			SqliteConnection myConnection = new SqliteConnection(connectionString);
