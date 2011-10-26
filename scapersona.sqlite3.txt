@@ -1,5 +1,5 @@
 CREATE TABLE scapersona (
-    "IdPersona" PK INTEGER NOT NULL,
+    "IdPersona" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     "Tipo" INTEGER DEFAULT (2),
     "Referencia" TEXT DEFAULT (NULL),
     "Nombre" TEXT DEFAULT (NULL),

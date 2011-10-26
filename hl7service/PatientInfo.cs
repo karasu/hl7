@@ -228,25 +228,10 @@ namespace hl7service
 			sqlString = sqlString.TrimEnd(new Char [] {' ',','});
 			
 			sqlString += ");";
-			
-			Logger.Debug("SQL Command: " + sqlString);
-			
-			
-			
-			
-			
-			
+					
 			//using sqlite3 for testing purposes
 			string connectionString = "URI=file:/home/karasu/hl7/sca.sqlite3,version=3";
-			
-
 			SqliteConnection myConnection = new SqliteConnection(connectionString);
-			
-			
-			
-			
-			
-			
 			
 			// SqlConnection myConnection = new SqlConnection();		
 			// myConnection.ConnectionString = this.connectionString;
@@ -268,15 +253,33 @@ namespace hl7service
 			try 
 			{
 				myConnection.Open();
-				
 				Logger.Debug("Connected to SQL Server");
-				
+			}
+			catch(Exception e)
+			{
+				Logger.Fatal("Error connecting to SQL Server: " + e.ToString());
+				return false;
+			}
+			
+			try
+			{
 				if (table == "SCAPersona" && sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
 				{
 					SqliteCommand checkNHCCmd = new SqliteCommand(sqlCheckNHC, myConnection);
 					// SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
-
-					if ((Int32)checkNHCCmd.ExecuteScalar() == 0)
+					
+					int num = 0;
+					
+					// num = (Int32)checkNHCCmd.ExecuteScalar();
+					
+					object val = checkNHCCmd.ExecuteScalar();
+ 
+					if (val != null)
+				    {
+				        num = Convert.ToInt32(val.ToString());
+				    }
+					
+					if (num == 0)
 					{
 						// Ok, it does not exist, we can add it.
 						addIt = true;
@@ -299,18 +302,24 @@ namespace hl7service
 				{
 					SqliteCommand myInsertCmd = new SqliteCommand(sqlString, myConnection);
 					// SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
+
 					myInsertCmd.ExecuteNonQuery();
+
+					// Logger.Debug("SQL Command: " + sqlString);
+					Logger.Debug("Insert done.");
 				}
 
 				myConnection.Close();
 				
-				Logger.Debug("Connection to SQL Server closed");
+				Logger.Debug("Connection to SQL Server closed.");
+				
 			}
 			catch(Exception e)
 			{
-				allOk = false;
-				Logger.Debug(sqlString);
-				Logger.Fatal("Can't open connection to database server: " + e.ToString());
+				myConnection.Close();
+				// Logger.Debug(sqlString);
+				Logger.Fatal("INSERT Error: " + e.ToString());
+				return false;
 			}
 			
 			return allOk;
@@ -432,7 +441,7 @@ namespace hl7service
 			{
 				int numColumns = excelReader.FieldCount;
 	
-				Logger.Debug("Found " + numColumns + " columns in excel file");
+				// Logger.Debug("Found " + numColumns + " columns in excel file");
 				
 				if (numColumns < 2 || numColumns > 3)
 				{
@@ -487,10 +496,9 @@ namespace hl7service
 					
 					if (storeSQL("SCAPersona", sql) == false)
 					{
-						// Commented for testing purposes
-						// excelReader.Close();
-						// stream.Close();
-						// return false;
+						excelReader.Close();
+						stream.Close();
+						return false;
 					}
 					
 					if (numColumns >= 3 && referencia != null)
