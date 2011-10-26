@@ -240,7 +240,7 @@ namespace hl7service
 			sqlString = sqlString.TrimEnd(new Char [] {' ',','});
 			
 			sqlString += ");";
-					
+
 			#if (SQLITE3)
 			string connectionString = "URI=file:/home/karasu/hl7/sca.sqlite3,version=3";
 			SqliteConnection myConnection = new SqliteConnection(connectionString);
@@ -321,7 +321,7 @@ namespace hl7service
 					#if (SQLITE3)
 					SqliteCommand myCmd = new SqliteCommand(sqlString, myConnection);
 					#else
-					SqlCommand myInsertCmd = new SqlCommand(sqlString, myConnection);
+					SqlCommand myCmd = new SqlCommand(sqlString, myConnection);
 					#endif
 
 					myCmd.ExecuteNonQuery();
@@ -330,7 +330,7 @@ namespace hl7service
 					Logger.Debug("Insert done.");
 					
 					#if (SQLITE3)
-					myCmd.CommandText = "SELECT @@IDENTITY";
+					myCmd.CommandText = "SELECT last_insert_rowid()";
 
 					object val = myCmd.ExecuteScalar();
 					
@@ -344,8 +344,9 @@ namespace hl7service
 						lastInsertRowId = -1;
 					}
 					#else
-					// SELECT @@IDENTITY
-					lastInsertRowId = (Int32)checkNHCCmd.ExecuteScalar();
+					myCmd.CommandText = "SELECT @@IDENTITY";
+					
+					lastInsertRowId = (Int32)myCmd.ExecuteScalar();
 					#endif
 				}
 
