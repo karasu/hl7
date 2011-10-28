@@ -286,16 +286,12 @@ namespace hl7service
 					
 					int num = 0;
 					
-					#if (SQLITE3)
 					object val = checkNHCCmd.ExecuteScalar();
  
 					if (val != null)
 				    {
 				        num = Convert.ToInt32(val.ToString());
 				    }
-					#else
-					num = (Int32)checkNHCCmd.ExecuteScalar();
-					#endif
 					
 					if (num == 0)
 					{
@@ -340,7 +336,7 @@ namespace hl7service
 					if (val != null)
 					{
 						lastInsertRowId = Convert.ToInt32(val.ToString());
-						Logger.Debug("LastInsertRowId : " + lastInsertRowId.ToString());
+						// Logger.Debug("LastInsertRowId : " + lastInsertRowId.ToString());
 					}
 					else
 					{
