@@ -331,6 +331,9 @@ namespace hl7service
 					
 					#if (SQLITE3)
 					myCmd.CommandText = "SELECT last_insert_rowid()";
+					#else
+					myCmd.CommandText = "SELECT @@IDENTITY";
+					#endif
 
 					object val = myCmd.ExecuteScalar();
 					
@@ -343,11 +346,6 @@ namespace hl7service
 					{
 						lastInsertRowId = -1;
 					}
-					#else
-					myCmd.CommandText = "SELECT @@IDENTITY";
-					
-					lastInsertRowId = (Int32)myCmd.ExecuteScalar();
-					#endif
 				}
 
 				myConnection.Close();
