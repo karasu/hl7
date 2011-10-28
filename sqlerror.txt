@@ -1,0 +1,5 @@
+INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The
+conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column
+'IdPersona'.
