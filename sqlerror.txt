@@ -1,5 +1,278 @@
-INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
- conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The
-conf
-lict occurred in database "SCA5", table "dbo.SCAPersona", column
-'IdPersona'.
+12:57:29: Starting file handler thread. Watching '\tmp' folder.
+12:57:29: Added \tmp\Example of bull list+ref sample.xls to queue.
+12:57:29: Starting TCP listener server at port 8901
+12:57:29: TCP server will save messages in '\tmp' folder.
+12:57:29: Processing \tmp\Example of bull list+ref sample.xls
+12:57:29: \tmp\Example of bull list+ref sample.xls
+12:57:34: Reading from a binary Excel file ('97-2003 format; *.xls)
+12:58:27: Connected to SQL Server
+12:58:27: Insert done.
+12:58:27: INSERT Error: System.InvalidCastException: Specified cast is not valid
+.
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 349
+12:58:49: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+12:59:12: Processing \tmp\Example of bull list+ref sample.xls
+12:59:12: \tmp\Example of bull list+ref sample.xls
+12:59:15: Reading from a binary Excel file ('97-2003 format; *.xls)
+12:59:58: Connected to SQL Server
+12:59:58: Sorry, patient with NHC 'HO0001' already exists in DB.
+12:59:58: Connection to SQL Server closed.
+13:00:19: Connected to SQL Server
+13:00:19: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:43: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:43: Processing \tmp\Example of bull list+ref sample.xls
+13:00:43: \tmp\Example of bull list+ref sample.xls
+13:00:45: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:45: Connected to SQL Server
+13:00:45: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:45: Connection to SQL Server closed.
+13:00:45: Connected to SQL Server
+13:00:45: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:45: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:45: Processing \tmp\Example of bull list+ref sample.xls
+13:00:45: \tmp\Example of bull list+ref sample.xls
+13:00:46: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:46: Connected to SQL Server
+13:00:46: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:46: Connection to SQL Server closed.
+13:00:46: Connected to SQL Server
+13:00:46: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:46: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:46: Processing \tmp\Example of bull list+ref sample.xls
+13:00:46: \tmp\Example of bull list+ref sample.xls
+13:00:47: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:47: Connected to SQL Server
+13:00:47: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:47: Connection to SQL Server closed.
+13:00:47: Connected to SQL Server
+13:00:47: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:47: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:47: Processing \tmp\Example of bull list+ref sample.xls
+13:00:47: \tmp\Example of bull list+ref sample.xls
+13:00:47: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:47: Connected to SQL Server
+13:00:47: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:47: Connection to SQL Server closed.
+13:00:47: Connected to SQL Server
+13:00:47: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:47: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:47: Processing \tmp\Example of bull list+ref sample.xls
+13:00:47: \tmp\Example of bull list+ref sample.xls
+13:00:48: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:48: Connected to SQL Server
+13:00:48: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:48: Connection to SQL Server closed.
+13:00:48: Connected to SQL Server
+13:00:48: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:48: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:48: Processing \tmp\Example of bull list+ref sample.xls
+13:00:48: \tmp\Example of bull list+ref sample.xls
+13:00:48: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:48: Connected to SQL Server
+13:00:48: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:48: Connection to SQL Server closed.
+13:00:48: Connected to SQL Server
+13:00:48: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:48: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:48: Processing \tmp\Example of bull list+ref sample.xls
+13:00:48: \tmp\Example of bull list+ref sample.xls
+13:00:48: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:48: Connected to SQL Server
+13:00:48: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:48: Connection to SQL Server closed.
+13:00:48: Connected to SQL Server
+13:00:48: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:48: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:48: Processing \tmp\Example of bull list+ref sample.xls
+13:00:48: \tmp\Example of bull list+ref sample.xls
+13:00:49: Reading from a binary Excel file ('97-2003 format; *.xls)
+13:00:49: Connected to SQL Server
+13:00:49: Sorry, patient with NHC 'HO0001' already exists in DB.
+13:00:49: Connection to SQL Server closed.
+13:00:49: Connected to SQL Server
+13:00:49: INSERT Error: System.Data.SqlClient.SqlException: The INSERT statement
+ conflicted with the FOREIGN KEY constraint "FK_SCAMuestra_SCAPersona". The conf
+lict occurred in database "SCA5", table "dbo.SCAPersona", column 'IdPersona'.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolea
+n breakConnection)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception
+, Boolean breakConnection)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObj
+ect stateObj)
+   at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cm
+dHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, Tds
+ParserStateObject stateObj)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName,
+Boolean async)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(DbAsyncResult res
+ult, String methodName, Boolean sendToPipe)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at hl7service.PatientInfo.storeSQL(String table, StringDictionary sql, Int32&
+ lastInsertRowId) in C:\Projectes\HL7\hl7service\PatientInfo.cs:line 327
+13:00:49: Error with \tmp\Example of bull list+ref sample.xls, putting it at the
+ end of the queue.
+13:00:49: Processing \tmp\Example of bull list+ref sample.xls
+13:00:49: \tmp\Example of bull list+ref sample.xls

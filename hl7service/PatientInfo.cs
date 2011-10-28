@@ -481,6 +481,7 @@ namespace hl7service
 				if (numColumns < 2 || numColumns > 3)
 				{
 					// file format not supported
+					excelReader.Close();
 					stream.Close();
 					return false;
 				}
