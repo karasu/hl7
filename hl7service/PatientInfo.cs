@@ -94,9 +94,7 @@ namespace hl7service
 			
 			// Now convert it to SQL
 			StringDictionary sql = new StringDictionary();
-			
-			sql.Clear();
-			
+					
 			sql.Add("Tipo","2");
 			
 			sql.Add("Referencia", "NULL");
@@ -374,7 +372,6 @@ namespace hl7service
 					// però s'ha de vigilar perquè aquest mateix caràcter pot estar dins d'un string.
 					
 					StringDictionary sql = new StringDictionary();
-					sql.Clear();
 					
 					int i = 0, k = 0;
 					bool insideString = false;
@@ -426,7 +423,6 @@ namespace hl7service
 					
 					// Convert it to SQL
 					StringDictionary sql = new StringDictionary();
-					sql.Clear();
 					
 					int keyIndex = 0;
 					
@@ -685,7 +681,6 @@ namespace hl7service
 		
 			// Now convert it to SQL
 			StringDictionary sql = new StringDictionary();
-			sql.Clear();
 			
 			sql.Add("Tipo", "2");
 			
