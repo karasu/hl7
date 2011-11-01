@@ -328,7 +328,8 @@ namespace hl7service
 					#else
 					myCmd.CommandText = "SELECT @@IDENTITY";
 					#endif
-
+					
+					
 					object val = myCmd.ExecuteScalar();
 					
 					if (val != null)
