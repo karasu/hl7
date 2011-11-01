@@ -535,7 +535,7 @@ namespace hl7service
 						return false;
 					}
 					
-					if (numColumns >= 3 && referencia != null)
+					if (numColumns >= 3 && referencia != null && lastInsertRowId != -1)
 					{
 						/*
 						Si el xls té tres columnes, a part d’emplenar
@@ -551,13 +551,9 @@ namespace hl7service
 						setSQLTableDefaults("SCAMuestra", ref sql);
 						
 						sql.Add("Referencia", referencia);
+						sql.Add("IdPersona", lastInsertRowId.ToString());
 						
-						if (lastInsertRowId != -1)
-						{
-							sql.Add("IdPersona", lastInsertRowId.ToString());
-						}
-						
-						if (storeSQL("SCAMuestra", sql) == false)
+						if (storeSQL("SCAMuestra", sql)  == false)
 						{
 							excelReader.Close();
 							stream.Close();
