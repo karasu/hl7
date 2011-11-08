@@ -7,10 +7,12 @@ using System.Collections.Specialized;
 
 using System.Xml;
 
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+
 #if (SQLITE3)
 using Mono.Data.Sqlite;
-#else
-using System.Data.SqlClient;
 #endif
 
 using System.IO;
@@ -247,20 +249,7 @@ namespace hl7service
 			myConnection.ConnectionString = this.connectionString;
 			#endif
 			
-			bool allOk = true;
 			
-			string sqlCheckNHC = string.Empty;
-			
-			if (table == "SCAPersona" && sql["NHC"] != "NULL")
-			{
-				// Before adding our patient we must check that there is not already in our database.
-				// To do that, we check its NHC number
-				
-				sqlCheckNHC = "SELECT COUNT(*) FROM SCAPersona WHERE NHC = '" + sql["NHC"] + "'";
-			}
-			
-			bool addIt = false;
-
 			try 
 			{
 				myConnection.Open();
@@ -274,17 +263,38 @@ namespace hl7service
 			
 			try
 			{
-				if (table == "SCAPersona" && sql["NHC"] != "NULL" && sqlCheckNHC.Length > 0)
+				string sqlCheck = string.Empty;
+				string sqlCheckField = string.Empty;
+				string sqlCheckId = string.Empty;
+				
+				if (table == "SCAPersona" && sql["NHC"] != "NULL")
+				{
+					// Before adding our patient we must check that there is not already in our database.
+					// To do that, we check its NHC number
+					sqlCheckField = "NHC";
+					sqlCheck = "SELECT COUNT(*) FROM SCAPersona WHERE NHC = '" + sql["NHC"] + "'";
+					sqlCheckId = "IdPersona";
+				}
+				else if (table == "SCAMuestra" && sql["Referencia"] != "NULL")
+				{
+					sqlCheckField = "Referencia";
+					sqlCheck = "SELECT COUNT(*) FROM SCAMuestra WHERE Referencia = '" + sql["Referencia"] + "'";
+					sqlCheckId = "IdMuestra";
+				}
+				
+				bool addIt = false;
+				
+				if (sqlCheck.Length > 0 && sql[sqlCheckField] != "NULL")
 				{
 					#if (SQLITE3)
-					SqliteCommand checkNHCCmd = new SqliteCommand(sqlCheckNHC, myConnection);
+					SqliteCommand checkCmd = new SqliteCommand(sqlCheck, myConnection);
 					#else
-					SqlCommand checkNHCCmd = new SqlCommand(sqlCheckNHC, myConnection);
+					SqlCommand checkCmd = new SqlCommand(sqlCheck, myConnection);
 					#endif
 					
 					int num = 0;
 					
-					object val = checkNHCCmd.ExecuteScalar();
+					object val = checkCmd.ExecuteScalar();
  
 					if (val != null)
 				    {
@@ -298,15 +308,25 @@ namespace hl7service
 					}
 					else
 					{
-						Logger.Debug("Sorry, patient with NHC '" + sql["NHC"] + "' already exists in DB.");
+						Logger.Debug("Row in table " + table + " with " + sqlCheckField + " '" + sql[sqlCheckField] + "' already exists in DB.");
+						
+						// we need to know it's id
+						checkCmd.CommandText = "SELECT " + sqlCheckId + " FROM " + table + " WHERE " + sqlCheckField + " = '" + sql[sqlCheckField] + "'";
+						using (IDataReader reader = checkCmd.ExecuteReader())
+						{
+							if (reader.Read())
+							{
+								lastInsertRowId = Convert.ToInt32(reader[0]);
+							}
+						}						
+						
 						addIt = false;
 					}
 				}
 				else
 				{
-					// NHC is null, we add it.
+					// We can't check if already exists.
 					// Should we check it's name here? Or it's ok to risk having duplicates ¿?
-					// What about other tables? (only SCAPersona is checked)
 					addIt = true;
 				}
 				
@@ -328,7 +348,6 @@ namespace hl7service
 					#else
 					myCmd.CommandText = "SELECT @@IDENTITY";
 					#endif
-					
 					
 					object val = myCmd.ExecuteScalar();
 					
@@ -356,7 +375,7 @@ namespace hl7service
 				return false;
 			}
 			
-			return allOk;
+			return true;
 		}
 		
 		public bool fromCSVtoSQL(string text, char csv_field_delimiter)
