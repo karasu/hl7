@@ -151,7 +151,7 @@ namespace hl7service
 			
 			DateTime today = DateTime.Today;
 
-			sql.Add("Alta", today.ToString("yyyyMMdd"));
+			sql.Add("Alta", today.ToString("yyyyMMdd HH:mm"));
 			
 			return storeSQL("SCAPersona", sql);
 		}
@@ -221,7 +221,7 @@ namespace hl7service
 
 			if (sql["ALTA"] == "NULL") // Alta can't be NULL
 			{
-				sql["ALTA"] = DateTime.Today.ToString("yyyyMMdd");
+				sql["ALTA"] = DateTime.Today.ToString("yyyyMMdd HH:mm");
 			}
 			
 			foreach (string key in sqlKeys)
@@ -599,7 +599,7 @@ namespace hl7service
 			
 			sql.Clear();				
 
-			string today = DateTime.Today.ToString("yyyyMMdd");
+			string today = DateTime.Today.ToString("yyyyMMdd HH:mm");
 			string now = DateTime.Now.ToShortTimeString();
 			
 			if (table == "SCAPersona")
