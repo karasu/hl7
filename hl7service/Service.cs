@@ -106,8 +106,7 @@ namespace hl7service
 		
 		public bool checkSQLConnection()
 		{
-			SQLServerInfo sqlInfo = new SQLServerInfo();
-			
+			// SQLServerInfo sqlInfo = new SQLServerInfo();
 			// return sqlInfo.checkConnection();		
 			return true;
 		}

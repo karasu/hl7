@@ -149,7 +149,7 @@ namespace hl7service
 			
 			// Alta
 			
-			DateTime today = DateTime.Today;
+			DateTime today = DateTime.Now;
 
 			sql.Add("Alta", today.ToString("yyyyMMdd HH:mm"));
 			
@@ -221,7 +221,7 @@ namespace hl7service
 
 			if (sql["ALTA"] == "NULL") // Alta can't be NULL
 			{
-				sql["ALTA"] = DateTime.Today.ToString("yyyyMMdd HH:mm");
+				sql["ALTA"] = DateTime.Now.ToString("yyyyMMdd HH:mm");
 			}
 			
 			foreach (string key in sqlKeys)
@@ -599,8 +599,8 @@ namespace hl7service
 			
 			sql.Clear();				
 
-			string today = DateTime.Today.ToString("yyyyMMdd HH:mm");
-			string now = DateTime.Now.ToShortTimeString();
+			string data = DateTime.Now.ToString("yyyyMMdd");
+			string hora = DateTime.Now.ToShortTimeString();
 			
 			if (table == "SCAPersona")
 			{
@@ -627,12 +627,12 @@ namespace hl7service
 				sql.Add("IdEspecie", "NULL");
 				sql.Add("IdCentro", "1");
 				sql.Add("IdDoctor", "1");
-				sql.Add("FechaAnalisis", today);
-				sql.Add("HoraAnalisis", now);
+				sql.Add("FechaAnalisis", data);
+				sql.Add("HoraAnalisis", hora);
 				sql.Add("Volumen", "2.5");
-				sql.Add("FechaObtencion", today);
-				sql.Add("HoraObtencion", now);
-				sql.Add("HoraEntrega", now);
+				sql.Add("FechaObtencion", data);
+				sql.Add("HoraObtencion", hora);
+				sql.Add("HoraEntrega", hora);
 				sql.Add("IdMetodoObtencion", "1");
 				sql.Add("DiasAbstinencia", "3");
 				sql.Add("pH", "7.5");
@@ -736,9 +736,7 @@ namespace hl7service
 			
 			// Alta
 			
-			DateTime today = DateTime.Today;
-
-			sql.Add("Alta", today.ToString("yyyyMMdd"));
+			sql.Add("Alta", DateTime.Now.ToString("yyyyMMdd"));
 			
 			return storeSQL("SCAPersona", sql);
 		}
