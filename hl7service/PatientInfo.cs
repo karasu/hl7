@@ -149,9 +149,7 @@ namespace hl7service
 			
 			// Alta
 			
-			DateTime today = DateTime.Now;
-
-			sql.Add("Alta", today.ToString("yyyyMMdd HH:mm"));
+			sql.Add("Alta", DateTime.Now.ToString("yyyyMMdd HH:mm"));
 			
 			return storeSQL("SCAPersona", sql);
 		}
@@ -277,6 +275,8 @@ namespace hl7service
 				}
 				else if (table == "SCAMuestra" && sql["Referencia"] != "NULL")
 				{
+					// Before adding our sample we must check that there is not already in our database.
+					// To do that, we check its Referencia
 					sqlCheckField = "Referencia";
 					sqlCheck = "SELECT COUNT(*) FROM SCAMuestra WHERE Referencia = '" + sql["Referencia"] + "'";
 					sqlCheckId = "IdMuestra";
@@ -326,7 +326,7 @@ namespace hl7service
 				else
 				{
 					// We can't check if already exists.
-					// Should we check it's name here? Or it's ok to risk having duplicates ¿?
+					// Should we check something else here? Or it's ok to risk having duplicates ¿?
 					addIt = true;
 				}
 				
@@ -375,6 +375,8 @@ namespace hl7service
 				return false;
 			}
 			
+			// Aquest true no indica que s'ha fet bé la inserció, sinò que no hi ha hagut cap error inesperat amb el SQL.
+			// Si les dades que volíem insertar ja existíen, també retorna true.
 			return true;
 		}
 		
@@ -599,8 +601,6 @@ namespace hl7service
 			
 			sql.Clear();				
 
-			string data = DateTime.Now.ToString("yyyyMMdd");
-			string hora = DateTime.Now.ToShortTimeString();
 			
 			if (table == "SCAPersona")
 			{
@@ -618,10 +618,13 @@ namespace hl7service
 				}
 				
 				// Alta
-				sql.Add("Alta", today);
+				sql.Add("Alta", DateTime.Now.ToString ("yyyyMMdd HH:mm"));
 			}
 			else if (table == "SCAMuestra")
 			{
+				string data = DateTime.Now.ToString("yyyyMMdd");
+				string hora = DateTime.Now.ToShortTimeString();
+
 				// Setting SCAMuestra defaults
 				
 				sql.Add("IdEspecie", "NULL");
@@ -736,7 +739,7 @@ namespace hl7service
 			
 			// Alta
 			
-			sql.Add("Alta", DateTime.Now.ToString("yyyyMMdd"));
+			sql.Add("Alta", DateTime.Now.ToString("yyyyMMdd HH:mm"));
 			
 			return storeSQL("SCAPersona", sql);
 		}
